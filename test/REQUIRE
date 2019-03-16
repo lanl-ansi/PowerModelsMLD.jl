@@ -1,0 +1,8 @@
+julia 1.0
+
+Cbc
+Ipopt
+SCS
+Juniper 0.2.0
+Pajarito 0.4.2
+Pavito
