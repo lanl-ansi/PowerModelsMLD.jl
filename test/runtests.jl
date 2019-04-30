@@ -16,15 +16,8 @@ using Juniper
 using SCS
 
 
-if VERSION < v"0.7.0-"
-    pms_path = Pkg.dir("PowerModels")
-    using Base.Test
-end
-
-if VERSION > v"0.7.0-"
-    pms_path = joinpath(dirname(pathof(PowerModels)), "..")
-    using Test
-end
+pms_path = joinpath(dirname(pathof(PowerModels)), "..")
+using Test
 
 
 cbc_solver = CbcSolver()
