@@ -1,5 +1,10 @@
 # PowerModelsMLD.jl
 
+Dev:
+[![Build Status](https://travis-ci.org/lanl-ansi/PowerModelsMLD.jl.svg?branch=master)](https://travis-ci.org/lanl-ansi/PowerModelsMLD.jl)
+[![codecov](https://codecov.io/gh/lanl-ansi/PowerModelsMLD.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/lanl-ansi/PowerModelsMLD.jl)
+
+
 A PowerModelsMLD provides extensions to [PowerModels](https://github.com/lanl-ansi/PowerModels.jl) for solving the Maximum Load Delivery (MLD) problem.
 The MLD problem provides a reliable numerical method for solving challenging N-k damage scenarios, such as those that arise in the analysis of extreme events.
 
