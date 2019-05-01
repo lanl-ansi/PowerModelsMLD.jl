@@ -2,7 +2,7 @@
 
 @testset "test ml output" begin
     @testset "active and reactive" begin
-        result = run_mld(case3_mld_s, ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.ACPPowerModel, ipopt_solver)
 
         @test result["status"] == :LocalOptimal
         for (i,bus) in result["solution"]["bus"]
@@ -52,7 +52,7 @@
     end
 
     @testset "active only" begin
-        result = run_mld(case3_mld_s, DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.DCPPowerModel, ipopt_solver)
 
         @test result["status"] == :LocalOptimal
         for (i,bus) in result["solution"]["bus"]

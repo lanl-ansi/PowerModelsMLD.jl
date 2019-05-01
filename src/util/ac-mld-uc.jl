@@ -9,32 +9,32 @@ function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{Str
     #PMs.check_refrence_buses(case)
 
     if length(setting) != 0
-        info(LOGGER, "settings: $(setting)")
+        Memento.info(LOGGER, "settings: $(setting)")
     end
 
 
-    soc_result = run_mld(case, SOCWRPowerModel, solver; setting=setting)
+    soc_result = run_mld(case, PMs.SOCWRPowerModel, solver; setting=setting)
 
     @assert (soc_result["status"] == :LocalOptimal)
     soc_sol = soc_result["solution"]
 
     soc_active_delivered = sum([if (case["load"][i]["status"] != 0) load["pd"] else 0.0 end for (i,load) in soc_sol["load"]])
     soc_active_output = sum([if (isequal(gen["pg"], NaN) || gen["gen_status"] == 0) 0.0 else gen["pg"] end for (i,gen) in soc_sol["gen"]])
-    info(LOGGER, "soc active gen:    $(soc_active_output)")
-    info(LOGGER, "soc active demand: $(soc_active_delivered)")
+    Memento.info(LOGGER, "soc active gen:    $(soc_active_output)")
+    Memento.info(LOGGER, "soc active demand: $(soc_active_delivered)")
 
 
     for (i,bus) in soc_sol["bus"]
-        if !isequal(bus["status"], NaN) && case["bus"][i]["bus_type"] != 4 && bus["status"] <= 1-int_tol 
+        if !isequal(bus["status"], NaN) && case["bus"][i]["bus_type"] != 4 && bus["status"] <= 1-int_tol
             case["bus"][i]["bus_type"] = 4
-            info(LOGGER, "removing bus $i, $(bus["status"])")
+            Memento.info(LOGGER, "removing bus $i, $(bus["status"])")
         end
     end
 
     for (i,gen) in soc_sol["gen"]
         if !isequal(gen["gen_status"], NaN) && case["gen"][i]["gen_status"] != 0 && gen["gen_status"] <= 1-int_tol
             case["gen"][i]["gen_status"] = 0
-            info(LOGGER, "removing gen $i, $(gen["gen_status"])")
+            Memento.info(LOGGER, "removing gen $i, $(gen["gen_status"])")
         end
     end
 
@@ -47,7 +47,7 @@ function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{Str
     else
         PMs.select_largest_component(case)
 
-        ac_result = run_mld_smpl(case, ACPPowerModel, solver; setting=setting)
+        ac_result = run_mld_smpl(case, PMs.ACPPowerModel, solver; setting=setting)
         ac_result["solve_time"] = ac_result["solve_time"] + soc_result["solve_time"]
 
         # update solution with status values
@@ -87,8 +87,8 @@ function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{Str
 
     active_delivered = sum([if (case["load"][i]["status"] != 0) load["pd"] else 0.0 end for (i,load) in sol["load"]])
     active_output = sum([if (isequal(gen["pg"], NaN) || gen["gen_status"] == 0) 0.0 else gen["pg"] end for (i,gen) in sol["gen"]])
-    info(LOGGER, "ac active gen:    $active_output")
-    info(LOGGER, "ac active demand: $active_delivered")
+    Memento.info(LOGGER, "ac active gen:    $active_output")
+    Memento.info(LOGGER, "ac active demand: $active_delivered")
 
 
     return result
