@@ -1,11 +1,11 @@
 module PowerModelsMLD
 
-using JuMP
-using InfrastructureModels
-using PowerModels
-using PowerModels.Memento
+import JuMP
+import InfrastructureModels
+import PowerModels
+import Memento
 
-const LOGGER = getlogger(PowerModels)
+const LOGGER = Memento.getlogger(PowerModels)
 
 const PMs = PowerModels
 

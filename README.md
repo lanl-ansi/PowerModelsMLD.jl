@@ -32,7 +32,7 @@ case["bus"]["2"]["bus_type"] = 4
 case["gen"]["2"]["gen_status"] = 0
 case["branch"]["7"]["br_status"] = 0
 
-result = PowerModelsMLD.run_ac_mld_uc(case, IpoptSolver())
+result = PowerModelsMLD.run_ac_mld_uc(case, with_optimizer(Ipopt.Optimizer))
 ```
 The result data indicates that only 700 of the 1000 MWs can be delivered given the removal of bus 2, generator 2 and branch 7.
 

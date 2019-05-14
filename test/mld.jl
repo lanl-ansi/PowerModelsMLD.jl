@@ -2,7 +2,7 @@
 
 @testset "test ac ml" begin
     @testset "3-bus case" begin
-        result = run_mld(case3_mld, ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld, PMs.ACPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -13,7 +13,7 @@
         @test all_voltages_on(result)
     end
     @testset "3-bus shunt case" begin
-        result = run_mld(case3_mld_s, ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.ACPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -25,7 +25,7 @@
         #TODO add test where branch "2" is turned on
     end
     @testset "3-bus uc case" begin
-        result = run_mld(case3_mld_uc, ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_uc, PMs.ACPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -37,7 +37,7 @@
         @test all_voltages_on(result)
     end
     @testset "3-bus line charge case" begin
-        result = run_mld(case3_mld_lc, ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_lc, PMs.ACPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -51,7 +51,7 @@
         @test isapprox(bus_status(result, "3"), 1.02784e-8; atol = 1e-2)
     end
     @testset "24-bus rts case" begin
-        result = run_mld(case24, ACPPowerModel, ipopt_solver)
+        result = run_mld(case24, PMs.ACPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -63,15 +63,15 @@
     end
 end
 
-case3_mld_ub = run_mld(case3_mld, ACPPowerModel, ipopt_solver)["objective"]
-case3_mld_s_ub = run_mld(case3_mld_s, ACPPowerModel, ipopt_solver)["objective"]
-case3_mld_uc_ub = run_mld(case3_mld_uc, ACPPowerModel, ipopt_solver)["objective"]
-case24_ub = run_mld(case24, ACPPowerModel, ipopt_solver)["objective"]
+case3_mld_ub = run_mld(case3_mld, PMs.ACPPowerModel, ipopt_solver)["objective"]
+case3_mld_s_ub = run_mld(case3_mld_s, PMs.ACPPowerModel, ipopt_solver)["objective"]
+case3_mld_uc_ub = run_mld(case3_mld_uc, PMs.ACPPowerModel, ipopt_solver)["objective"]
+case24_ub = run_mld(case24, PMs.ACPPowerModel, ipopt_solver)["objective"]
 
 
 @testset "test dc ml" begin
     @testset "3-bus case" begin
-        result = run_mld(case3_mld, DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld, PMs.DCPPowerModel, ipopt_solver)
 
         #println(result)
         #println(result["objective"])
@@ -82,7 +82,7 @@ case24_ub = run_mld(case24, ACPPowerModel, ipopt_solver)["objective"]
         @test all_gens_on(result)
     end
     @testset "3-bus shunt case" begin
-        result = run_mld(case3_mld_s, DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.DCPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -93,7 +93,7 @@ case24_ub = run_mld(case24, ACPPowerModel, ipopt_solver)["objective"]
         #TODO add test where branch "2" is turned on
     end
     @testset "3-bus uc case" begin
-        result = run_mld(case3_mld_uc, DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_uc, PMs.DCPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -104,7 +104,7 @@ case24_ub = run_mld(case24, ACPPowerModel, ipopt_solver)["objective"]
         @test isapprox(gen_status(result, "2"), 1.000000; atol = 1e-4)
     end
     @testset "3-bus line charge case" begin
-        result = run_mld(case3_mld_lc, DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_lc, PMs.DCPPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -114,7 +114,7 @@ case24_ub = run_mld(case24, ACPPowerModel, ipopt_solver)["objective"]
         @test all_gens_on(result)
     end
     @testset "24-bus rts case" begin
-        result = run_mld(case24, DCPPowerModel, ipopt_solver)
+        result = run_mld(case24, PMs.DCPPowerModel, ipopt_solver)
 
         #println(result)
         #println(result["objective"])
@@ -129,7 +129,7 @@ end
 
 @testset "test soc ml" begin
     @testset "3-bus case" begin
-        result = run_mld(case3_mld, SOCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld, PMs.SOCWRPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -141,7 +141,7 @@ end
         @test result["objective"]/case3_mld_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus shunt case" begin
-        result = run_mld(case3_mld_s, SOCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.SOCWRPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -154,7 +154,7 @@ end
         @test result["objective"]/case3_mld_s_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus case uc" begin
-        result = run_mld(case3_mld_uc, SOCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_uc, PMs.SOCWRPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -167,7 +167,7 @@ end
         @test result["objective"]/case3_mld_uc_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus line charge case" begin
-        result = run_mld(case3_mld_lc, SOCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_lc, PMs.SOCWRPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -181,7 +181,7 @@ end
         @test isapprox(bus_status(result, "3"), 0.560770; atol = 1e-2)
     end
     @testset "24-bus rts case" begin
-        result = run_mld(case24, SOCWRPowerModel, ipopt_solver)
+        result = run_mld(case24, PMs.SOCWRPowerModel, ipopt_solver)
 
         #println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -198,7 +198,7 @@ end
 #=
 @testset "test qc ml" begin
     @testset "3-bus case" begin
-        result = run_mld(case3_mld, QCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld, PMs.QCWRPowerModel, ipopt_solver)
 
         println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -210,7 +210,7 @@ end
         @test result["objective"]/case3_mld_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus shunt case" begin
-        result = run_mld(case3_mld_s, QCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, PMs.QCWRPowerModel, ipopt_solver)
 
         println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -223,7 +223,7 @@ end
         @test result["objective"]/case3_mld_s_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus uc case" begin
-        result = run_mld(case3_mld_uc, QCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_uc, PMs.QCWRPowerModel, ipopt_solver)
 
         println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -236,7 +236,7 @@ end
         @test result["objective"]/case3_mld_uc_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus line charge case" begin
-        result = run_mld(case3_mld_lc, QCWRPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_lc, PMs.QCWRPowerModel, ipopt_solver)
 
         println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -250,7 +250,7 @@ end
         #@test isapprox(bus_status(result, "3"), 0.9343086026987113; atol = 1e-2)
     end
     @testset "24-bus rts case" begin
-        result = run_mld(case24, QCWRPowerModel, ipopt_solver)
+        result = run_mld(case24, PMs.QCWRPowerModel, ipopt_solver)
 
         println(result["objective"])
         @test result["status"] == :LocalOptimal
@@ -266,7 +266,7 @@ end
 
 @testset "test sdp ml" begin
     @testset "3-bus case" begin
-        result = run_mld(case3_mld, SDPWRMPowerModel, scs_solver)
+        result = run_mld(case3_mld, PMs.SDPWRMPowerModel, scs_solver)
 
         #println(result["objective"])
         @test result["status"] == :Optimal
@@ -278,7 +278,7 @@ end
         @test result["objective"]/case3_mld_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus shunt case" begin
-        result = run_mld(case3_mld_s, SDPWRMPowerModel, scs_solver)
+        result = run_mld(case3_mld_s, PMs.SDPWRMPowerModel, scs_solver)
 
         #println(result["objective"])
         @test result["status"] == :Optimal
@@ -291,7 +291,7 @@ end
         @test result["objective"]/case3_mld_s_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus uc case" begin
-        result = run_mld(case3_mld_uc, SDPWRMPowerModel, scs_solver)
+        result = run_mld(case3_mld_uc, PMs.SDPWRMPowerModel, scs_solver)
 
         #println(result["objective"])
         @test result["status"] == :Optimal
@@ -300,13 +300,13 @@ end
         @test isapprox(result["objective"], 317.95315458497123; atol = 1e-2)
         #println("active power: $(active_power_served(result))")
         @test isapprox(active_power_served(result), 1.1352542434823208; atol = 1e-1)
-        @test isapprox(gen_status(result, "1"), 0.681722; atol = 1e-4)
+        @test isapprox(gen_status(result, "1"), 0.681722; atol = 2e-4)
         @test isapprox(gen_status(result, "2"), 1.000000; atol = 1e-4)
         @test all_voltages_on(result)
         @test result["objective"]/case3_mld_uc_ub >= 1.0 - opt_gap_tol
     end
     @testset "3-bus line charge case" begin
-        result = run_mld(case3_mld_lc, SDPWRMPowerModel, scs_solver)
+        result = run_mld(case3_mld_lc, PMs.SDPWRMPowerModel, scs_solver)
 
         #println(result["objective"])
         @test result["status"] == :Optimal
@@ -321,7 +321,7 @@ end
     end
     # TODO replace this with smaller case, way too slow for unit testing
     #@testset "24-bus rts case" begin
-    #    result = run_mld(case24, SDPWRMPowerModel, scs_solver)
+    #    result = run_mld(case24, PMs.SDPWRMPowerModel, scs_solver)
     #    PowerModels.make_mixed_units(result["solution"])
 
     #    @test result["status"] == :Optimal

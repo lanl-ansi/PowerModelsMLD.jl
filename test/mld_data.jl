@@ -70,7 +70,7 @@
 
         data = PowerModels.parse_file("../test/data/case5_mld_ft.m")
         PowerModels.propagate_topology_status(data)
-        result = run_mld(data, ACPPowerModel, ipopt_solver)
+        result = run_mld(data, PMs.ACPPowerModel, ipopt_solver)
         solution = result["solution"]
 
         active_buses = Set(["2", "4", "5"])
