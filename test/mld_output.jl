@@ -4,7 +4,7 @@
     @testset "active and reactive" begin
         result = run_mld(case3_mld_s, PMs.ACPPowerModel, ipopt_solver)
 
-        @test result["status"] == :LocalOptimal
+        @test result["termination_status"] == PMs.LOCALLY_SOLVED
         for (i,bus) in result["solution"]["bus"]
             @test haskey(bus, "status")
             @test haskey(bus, "vm")
@@ -54,7 +54,7 @@
     @testset "active only" begin
         result = run_mld(case3_mld_s, PMs.DCPPowerModel, ipopt_solver)
 
-        @test result["status"] == :LocalOptimal
+        @test result["termination_status"] == PMs.LOCALLY_SOLVED
         for (i,bus) in result["solution"]["bus"]
             @test haskey(bus, "vm")
             @test haskey(bus, "va")

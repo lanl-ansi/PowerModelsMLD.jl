@@ -2,11 +2,11 @@
 "implements a scalable huristic solution to the AC-MLD problem"
 function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{String,<:Any}=Dict{String,Any}("per_unit" => case["per_unit"]), setting::Dict{String,<:Any}=Dict{String,Any}(), int_tol::Real=1e-6)
     case = deepcopy(case)
-    PMs.update_data(case, modifications)
+    PMs.update_data!(case, modifications)
 
-    PMs.propagate_topology_status(case)
-    PMs.select_largest_component(case)
-    #PMs.check_refrence_buses(case)
+    PMs.propagate_topology_status!(case)
+    PMs.select_largest_component!(case)
+    #PMs.correct_refrence_buses!(case)
 
     if length(setting) != 0
         Memento.info(LOGGER, "settings: $(setting)")
@@ -15,7 +15,7 @@ function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{Str
 
     soc_result = run_mld(case, PMs.SOCWRPowerModel, solver; setting=setting)
 
-    @assert (soc_result["status"] == :LocalOptimal)
+    @assert (soc_result["termination_status"] == PMs.LOCALLY_SOLVED || soc_result["termination_status"] == PMs.OPTIMAL)
     soc_sol = soc_result["solution"]
 
     soc_active_delivered = sum([if (case["load"][i]["status"] != 0) load["pd"] else 0.0 end for (i,load) in soc_sol["load"]])
@@ -38,14 +38,14 @@ function run_ac_mld_uc(case::Dict{String,<:Any}, solver; modifications::Dict{Str
         end
     end
 
-    PMs.propagate_topology_status(case)
+    PMs.propagate_topology_status!(case)
 
     bus_count = sum([if (case["bus"][i]["bus_type"] != 4) 1 else 0 end for (i,bus) in case["bus"]])
 
     if bus_count <= 0
         result = soc_result
     else
-        PMs.select_largest_component(case)
+        PMs.select_largest_component!(case)
 
         ac_result = run_mld_smpl(case, PMs.ACPPowerModel, solver; setting=setting)
         ac_result["solve_time"] = ac_result["solve_time"] + soc_result["solve_time"]
