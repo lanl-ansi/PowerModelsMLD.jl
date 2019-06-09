@@ -1,30 +1,30 @@
 
 
 # same as AbstractWRForm
-function variable_shunt_factor(pm::PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: PMs.AbstractWRForms
-    PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
-        [i in PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt",
+function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: _PMs.AbstractWRForms
+    _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
+        [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt",
         lower_bound = 0,
         upper_bound = 1,
-        start = PMs.comp_start_value(PMs.ref(pm, nw, :shunt, i), "z_shunt_start", cnd, 1.0)
+        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "z_shunt_start", cnd, 1.0)
     )
-    PMs.var(pm, nw, cnd)[:wz_shunt] = JuMP.@variable(pm.model,
-        [i in PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_wz_shunt",
+    _PMs.var(pm, nw, cnd)[:wz_shunt] = JuMP.@variable(pm.model,
+        [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_wz_shunt",
         lower_bound = 0,
-        upper_bound = PMs.ref(pm, nw, :bus)[PMs.ref(pm, nw, :shunt, i)["shunt_bus"]]["vmax"]^2,
-        start = PMs.comp_start_value(PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
+        upper_bound = _PMs.ref(pm, nw, :bus)[_PMs.ref(pm, nw, :shunt, i)["shunt_bus"]]["vmax"]^2,
+        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
     )
 end
 
 
-function constraint_bus_voltage_product_on_off(pm::PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: PMs.AbstractWRForms
-    wr_min, wr_max, wi_min, wi_max = PMs.ref_calc_voltage_product_bounds(PMs.ref(pm, nw, :buspairs))
+function constraint_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: _PMs.AbstractWRForms
+    wr_min, wr_max, wi_min, wi_max = _PMs.ref_calc_voltage_product_bounds(_PMs.ref(pm, nw, :buspairs))
 
-    wr = PMs.var(pm, nw, cnd, :wr)
-    wi = PMs.var(pm, nw, cnd, :wi)
-    z_voltage = PMs.var(pm, nw, cnd, :z_voltage)
+    wr = _PMs.var(pm, nw, cnd, :wr)
+    wi = _PMs.var(pm, nw, cnd, :wi)
+    z_voltage = _PMs.var(pm, nw, cnd, :z_voltage)
 
-    for bp in PMs.ids(pm, nw, :buspairs)
+    for bp in _PMs.ids(pm, nw, :buspairs)
         (i,j) = bp
         z_fr = z_voltage[i]
         z_to = z_voltage[j]
@@ -42,17 +42,17 @@ function constraint_bus_voltage_product_on_off(pm::PMs.GenericPowerModel{T}; nw:
 end
 
 
-function constraint_kcl_shunt_shed(pm::PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs) where T <: PMs.AbstractWRForms
-    w = PMs.var(pm, n, c, :w, i)
-    p = PMs.var(pm, n, c, :p)
-    q = PMs.var(pm, n, c, :q)
-    pg = PMs.var(pm, n, c, :pg)
-    qg = PMs.var(pm, n, c, :qg)
-    p_dc = PMs.var(pm, n, c, :p_dc)
-    q_dc = PMs.var(pm, n, c, :q_dc)
-    z_demand = PMs.var(pm, n, c, :z_demand)
-    z_shunt = PMs.var(pm, n, c, :z_shunt)
-    wz_shunt = PMs.var(pm, n, c, :wz_shunt)
+function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs) where T <: _PMs.AbstractWRForms
+    w = _PMs.var(pm, n, c, :w, i)
+    p = _PMs.var(pm, n, c, :p)
+    q = _PMs.var(pm, n, c, :q)
+    pg = _PMs.var(pm, n, c, :pg)
+    qg = _PMs.var(pm, n, c, :qg)
+    p_dc = _PMs.var(pm, n, c, :p_dc)
+    q_dc = _PMs.var(pm, n, c, :q_dc)
+    z_demand = _PMs.var(pm, n, c, :z_demand)
+    z_shunt = _PMs.var(pm, n, c, :z_shunt)
+    wz_shunt = _PMs.var(pm, n, c, :wz_shunt)
 
 
     JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*wz_shunt[i] for (i,gs) in bus_gs))

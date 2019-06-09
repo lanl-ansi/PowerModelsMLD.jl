@@ -5,9 +5,9 @@ import InfrastructureModels
 import PowerModels
 import Memento
 
-const LOGGER = Memento.getlogger(PowerModels)
+const _LOGGER = Memento.getlogger(PowerModels)
 
-const PMs = PowerModels
+const _PMs = PowerModels
 
 include("core/variable.jl")
 include("core/constraint.jl")
@@ -23,5 +23,9 @@ include("form/shared.jl")
 include("prob/mld.jl")
 
 include("util/ac-mld-uc.jl")
+
+
+# this must come last to support automated export
+include("core/export.jl")
 
 end

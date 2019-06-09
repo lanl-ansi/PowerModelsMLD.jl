@@ -1,7 +1,7 @@
 using PowerModelsMLD
 
-import InfrastructureModels
-import PowerModels
+using InfrastructureModels
+using PowerModels
 import Memento
 
 # Suppress warnings during testing.
@@ -33,8 +33,6 @@ case24 = PowerModels.parse_file("$(pms_path)/test/data/matpower/case24.m")
 
 # testing threshold parameters
 opt_gap_tol = 1e-3 # in the case of max, throw error if ub/lb < 1 - opt_gap_tol (note, non-SCS solvers are more accurate)
-
-const PMs = PowerModels
 
 include("common.jl")
 

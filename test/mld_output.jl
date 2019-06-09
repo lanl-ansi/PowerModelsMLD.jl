@@ -2,9 +2,9 @@
 
 @testset "test ml output" begin
     @testset "active and reactive" begin
-        result = run_mld(case3_mld_s, PMs.ACPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, ACPPowerModel, ipopt_solver)
 
-        @test result["termination_status"] == PMs.LOCALLY_SOLVED
+        @test result["termination_status"] == LOCALLY_SOLVED
         for (i,bus) in result["solution"]["bus"]
             @test haskey(bus, "status")
             @test haskey(bus, "vm")
@@ -52,13 +52,13 @@
     end
 
     @testset "active only" begin
-        result = run_mld(case3_mld_s, PMs.DCPPowerModel, ipopt_solver)
+        result = run_mld(case3_mld_s, DCPPowerModel, ipopt_solver)
 
-        @test result["termination_status"] == PMs.LOCALLY_SOLVED
+        @test result["termination_status"] == LOCALLY_SOLVED
         for (i,bus) in result["solution"]["bus"]
             @test haskey(bus, "vm")
             @test haskey(bus, "va")
-            @test isequal(bus["status"], NaN)
+            @test bus["status"] >= 0.0 && bus["status"] <= 1.0
         end
 
         for (i,load) in result["solution"]["load"]
