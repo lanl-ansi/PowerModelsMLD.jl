@@ -18,13 +18,6 @@ function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel, i::Int;
 end
 
 
-function constraint_generation_on_off(pm::_PMs.GenericPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
-    gen = _PMs.ref(pm, nw, :gen, i)
-
-    constraint_generation_on_off(pm, nw, cnd, i, gen["pmin"][cnd], gen["pmax"][cnd], gen["qmin"][cnd], gen["qmax"][cnd])
-end
-
-
 constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...) = constraint_bus_voltage_on_off(pm, nw, cnd; kwargs...)
 
 

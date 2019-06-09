@@ -17,46 +17,6 @@ function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::
     )
 end
 
-function variable_generation_indicator(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax=false)
-    if !relax
-        _PMs.var(pm, nw, cnd)[:z_gen] = JuMP.@variable(pm.model,
-            [i in _PMs.ids(pm, nw, :gen)], base_name="$(nw)_$(cnd)_z_gen",
-            binary = true,
-            start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "z_gen_start", cnd, 1.0)
-        )
-    else
-        _PMs.var(pm, nw, cnd)[:z_gen] = JuMP.@variable(pm.model,
-            [i in _PMs.ids(pm, nw, :gen)], base_name="$(nw)_$(cnd)_z_gen",
-            lower_bound = 0,
-            upper_bound = 1,
-            start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "z_gen_start", cnd, 1.0)
-        )
-    end
-end
-
-
-function variable_generation_on_off(pm::_PMs.GenericPowerModel; kwargs...)
-    variable_active_generation_on_off(pm; kwargs...)
-    variable_reactive_generation_on_off(pm; kwargs...)
-end
-
-function variable_active_generation_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
-    _PMs.var(pm, nw, cnd)[:pg] = JuMP.@variable(pm.model,
-        [i in _PMs.ids(pm, nw, :gen)], base_name="$(nw)_$(cnd)_pg",
-        lower_bound = min(0, _PMs.ref(pm, nw, :gen, i, "pmin", cnd)),
-        upper_bound = max(0, _PMs.ref(pm, nw, :gen, i, "pmax", cnd)),
-        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "pg_start", cnd)
-    )
-end
-
-function variable_reactive_generation_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
-    _PMs.var(pm, nw, cnd)[:qg] = JuMP.@variable(pm.model,
-        [i in _PMs.ids(pm, nw, :gen)], base_name="$(nw)_$(cnd)_qg",
-        lower_bound = min(0, _PMs.ref(pm, nw, :gen, i, "qmin", cnd)),
-        upper_bound = max(0, _PMs.ref(pm, nw, :gen, i, "qmax", cnd)),
-        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "qg_start", cnd)
-    )
-end
 
 function variable_bus_voltage_indicator(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if !relax

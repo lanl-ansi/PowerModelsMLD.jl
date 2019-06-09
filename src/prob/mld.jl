@@ -1,6 +1,3 @@
-# Formulations of Various Maximum Loadability Problems
-export run_mld, run_mld_smpl, run_mld_uc
-
 # Maximum loadability with generator and bus participation relaxed
 function run_mld(file, model_constructor, solver; kwargs...)
     return _PMs.run_model(file, model_constructor, solver, post_mld; solution_builder = solution_mld, kwargs...)
@@ -10,8 +7,8 @@ function post_mld(pm::_PMs.GenericPowerModel)
     variable_bus_voltage_indicator(pm, relax=true)
     variable_bus_voltage_on_off(pm)
 
-    variable_generation_indicator(pm, relax=true)
-    variable_generation_on_off(pm)
+    _PMs.variable_generation_indicator(pm, relax=true)
+    _PMs.variable_generation_on_off(pm)
 
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
@@ -29,7 +26,7 @@ function post_mld(pm::_PMs.GenericPowerModel)
     constraint_bus_voltage_on_off(pm)
 
     for i in _PMs.ids(pm, :gen)
-        constraint_generation_on_off(pm, i)
+        _PMs.constraint_generation_on_off(pm, i)
     end
 
     for i in _PMs.ids(pm, :bus)
@@ -63,8 +60,8 @@ function post_mld_uc(pm::_PMs.GenericPowerModel)
     variable_bus_voltage_indicator(pm)
     variable_bus_voltage_on_off(pm)
 
-    variable_generation_indicator(pm)
-    variable_generation_on_off(pm)
+    _PMs.variable_generation_indicator(pm)
+    _PMs.variable_generation_on_off(pm)
 
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
@@ -83,7 +80,7 @@ function post_mld_uc(pm::_PMs.GenericPowerModel)
 
 
     for i in _PMs.ids(pm, :gen)
-        constraint_generation_on_off(pm, i)
+        _PMs.constraint_generation_on_off(pm, i)
     end
 
     for i in _PMs.ids(pm, :bus)
@@ -110,10 +107,10 @@ function solution_mld(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     _PMs.add_setpoint_bus_voltage!(sol, pm)
     _PMs.add_setpoint_generator_power!(sol, pm)
     _PMs.add_setpoint_branch_flow!(sol, pm)
+    _PMs.add_setpoint_generator_status!(sol, pm)
     add_setpoint_bus_status!(sol, pm)
     add_setpoint_load!(sol, pm)
     add_setpoint_shunt!(sol, pm)
-    add_setpoint_generator_status!(sol, pm)
 end
 
 function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel)
@@ -132,9 +129,9 @@ function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
 end
 
-function add_setpoint_generator_status!(sol, pm::_PMs.GenericPowerModel)
-    _PMs.add_setpoint!(sol, pm, "gen", "gen_status", :z_gen, status_name="gen_status", default_value = (item) -> item["gen_status"]*1.0)
-end
+#function add_setpoint_generator_status!(sol, pm::_PMs.GenericPowerModel)
+#    _PMs.add_setpoint!(sol, pm, "gen", "gen_status", :z_gen, status_name="gen_status", default_value = (item) -> item["gen_status"]*1.0, conductorless=true)
+#end
 
 
 
