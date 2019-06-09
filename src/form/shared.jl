@@ -22,7 +22,7 @@ function constraint_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw
 
     wr = _PMs.var(pm, nw, cnd, :wr)
     wi = _PMs.var(pm, nw, cnd, :wi)
-    z_voltage = _PMs.var(pm, nw, cnd, :z_voltage)
+    z_voltage = _PMs.var(pm, nw, :z_voltage)
 
     for bp in _PMs.ids(pm, nw, :buspairs)
         (i,j) = bp

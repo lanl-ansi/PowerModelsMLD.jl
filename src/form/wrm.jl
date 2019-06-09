@@ -63,7 +63,7 @@ end
 function constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int) where T <: _PMs.AbstractWRMForm
     WR = _PMs.var(pm, n, c, :WR)
     WI = _PMs.var(pm, n, c, :WI)
-    z_voltage = _PMs.var(pm, n, c, :z_voltage)
+    z_voltage = _PMs.var(pm, n, :z_voltage)
 
     JuMP.@SDconstraint(pm.model, [WR WI; -WI WR] >= 0)
 

@@ -7,7 +7,7 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel)
     z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
     z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
-    z_voltage = Dict(n => _PMs.var(pm, :z_voltage, nw=n) for n in nws)
+    z_voltage = Dict(n => _PMs.var(pm, n, :z_voltage) for n in nws)
 
     M = Dict(n => 10*maximum([abs(load["pd"]) for (i,load) in _PMs.ref(pm, n, :load)]) for n in nws)
 

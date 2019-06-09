@@ -126,14 +126,8 @@ function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel)
 end
 
 function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)
-    _PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
+    _PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, conductorless=true, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
 end
-
-#function add_setpoint_generator_status!(sol, pm::_PMs.GenericPowerModel)
-#    _PMs.add_setpoint!(sol, pm, "gen", "gen_status", :z_gen, status_name="gen_status", default_value = (item) -> item["gen_status"]*1.0, conductorless=true)
-#end
-
-
 
 
 # Maximum loadability with generator participation fixed
