@@ -6,19 +6,19 @@ function variable_shunt_factor(pm::PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd
         [i in PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt",
         lower_bound = 0,
         upper_bound = 1,
-        start = PMs.getval(PMs.ref(pm, nw, :shunt, i), "z_shunt_start", cnd, 1.0)
+        start = PMs.comp_start_value(PMs.ref(pm, nw, :shunt, i), "z_shunt_start", cnd, 1.0)
     )
     PMs.var(pm, nw, cnd)[:wz_shunt] = JuMP.@variable(pm.model,
         [i in PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_wz_shunt",
         lower_bound = 0,
         upper_bound = PMs.ref(pm, nw, :bus)[PMs.ref(pm, nw, :shunt, i)["shunt_bus"]]["vmax"]^2,
-        start = PMs.getval(PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
+        start = PMs.comp_start_value(PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
     )
 end
 
 
 function constraint_bus_voltage_product_on_off(pm::PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: PMs.AbstractWRForms
-    wr_min, wr_max, wi_min, wi_max = PMs.calc_voltage_product_bounds(PMs.ref(pm, nw, :buspairs))
+    wr_min, wr_max, wi_min, wi_max = PMs.ref_calc_voltage_product_bounds(PMs.ref(pm, nw, :buspairs))
 
     wr = PMs.var(pm, nw, cnd, :wr)
     wi = PMs.var(pm, nw, cnd, :wi)

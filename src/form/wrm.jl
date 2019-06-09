@@ -1,7 +1,7 @@
 
 
 function variable_bus_voltage_on_off(pm::PMs.GenericPowerModel{T}, nw::Int=pm.cnw, cnd::Int=pm.ccnd; bounded = true, kwargs...) where T <: PMs.AbstractWRMForm
-    wr_min, wr_max, wi_min, wi_max = PMs.calc_voltage_product_bounds(PMs.ref(pm, nw, :buspairs))
+    wr_min, wr_max, wi_min, wi_max = PMs.ref_calc_voltage_product_bounds(PMs.ref(pm, nw, :buspairs))
 
     bus_count = length(PMs.ref(pm, nw, :bus))
     w_index = 1:bus_count

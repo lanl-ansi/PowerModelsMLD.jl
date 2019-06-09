@@ -3,7 +3,7 @@ export run_mld, run_mld_smpl, run_mld_uc
 
 # Maximum loadability with generator and bus participation relaxed
 function run_mld(file, model_constructor, solver; kwargs...)
-    return PMs.run_generic_model(file, model_constructor, solver, post_mld; solution_builder = get_mld_solution, kwargs...)
+    return PMs.run_model(file, model_constructor, solver, post_mld; solution_builder = get_mld_solution, kwargs...)
 end
 
 function post_mld(pm::PMs.GenericPowerModel)
@@ -56,7 +56,7 @@ end
 
 # Maximum loadability with flexible generator participation fixed
 function run_mld_uc(file, model_constructor, solver; kwargs...)
-    return PMs.run_generic_model(file, model_constructor, solver, post_mld_uc; solution_builder = get_mld_solution, kwargs...)
+    return PMs.run_model(file, model_constructor, solver, post_mld_uc; solution_builder = get_mld_solution, kwargs...)
 end
 
 function post_mld_uc(pm::PMs.GenericPowerModel)
@@ -107,9 +107,9 @@ end
 
 
 function get_mld_solution(pm::PMs.GenericPowerModel, sol::Dict{String,Any})
-    PMs.add_bus_voltage_setpoint(sol, pm)
-    PMs.add_generator_power_setpoint(sol, pm)
-    PMs.add_branch_flow_setpoint(sol, pm)
+    PMs.add_setpoint_bus_voltage!(sol, pm)
+    PMs.add_setpoint_generator_power!(sol, pm)
+    PMs.add_setpoint_branch_flow!(sol, pm)
     add_bus_status_setpoint(sol, pm)
     add_load_setpoint(sol, pm)
     add_shunt_setpoint(sol, pm)
@@ -117,23 +117,23 @@ function get_mld_solution(pm::PMs.GenericPowerModel, sol::Dict{String,Any})
 end
 
 function add_load_setpoint(sol, pm::PMs.GenericPowerModel)
-    PMs.add_setpoint(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
-    PMs.add_setpoint(sol, pm, "load", "qd", :z_demand; scale = (x,item,i) -> x*item["qd"][i])
-    PMs.add_setpoint(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
+    PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
+    PMs.add_setpoint!(sol, pm, "load", "qd", :z_demand; scale = (x,item,i) -> x*item["qd"][i])
+    PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_shunt_setpoint(sol, pm::PMs.GenericPowerModel)
-    PMs.add_setpoint(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
-    PMs.add_setpoint(sol, pm, "shunt", "bs", :z_shunt; scale = (x,item,i) -> x*item["bs"][i])
-    PMs.add_setpoint(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
+    PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
+    PMs.add_setpoint!(sol, pm, "shunt", "bs", :z_shunt; scale = (x,item,i) -> x*item["bs"][i])
+    PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_bus_status_setpoint(sol, pm::PMs.GenericPowerModel)
-    PMs.add_setpoint(sol, pm, "bus", "status", :z_voltage; default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
+    PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
 end
 
 function add_generator_status_setpoint(sol, pm::PMs.GenericPowerModel)
-    PMs.add_setpoint(sol, pm, "gen", "gen_status", :z_gen; default_value = (item) -> item["gen_status"]*1.0)
+    PMs.add_setpoint!(sol, pm, "gen", "gen_status", :z_gen, status_name="gen_status", default_value = (item) -> item["gen_status"]*1.0)
 end
 
 
@@ -141,7 +141,7 @@ end
 
 # Maximum loadability with generator participation fixed
 function run_mld_smpl(file, model_constructor, solver; kwargs...)
-    return PMs.run_generic_model(file, model_constructor, solver, run_mld_smpl; solution_builder = get_mld_smpl_solution, kwargs...)
+    return PMs.run_model(file, model_constructor, solver, run_mld_smpl; solution_builder = get_mld_smpl_solution, kwargs...)
 end
 
 function run_mld_smpl(pm::PMs.GenericPowerModel)
@@ -175,7 +175,7 @@ function run_mld_smpl(pm::PMs.GenericPowerModel)
         PMs.constraint_theta_ref(pm, i)
     end
 
-    PMs.constraint_voltage(pm)
+    PMs.constraint_model_voltage(pm)
 
     for (i, bus) in PMs.ref(pm, :bus)
         constraint_kcl_shunt_shed(pm, i)
@@ -205,9 +205,9 @@ end
 
 
 function get_mld_smpl_solution(pm::PMs.GenericPowerModel, sol::Dict{String,Any})
-    PMs.add_bus_voltage_setpoint(sol, pm)
-    PMs.add_generator_power_setpoint(sol, pm)
-    PMs.add_branch_flow_setpoint(sol, pm)
+    PMs.add_setpoint_bus_voltage!(sol, pm)
+    PMs.add_setpoint_generator_power!(sol, pm)
+    PMs.add_setpoint_branch_flow!(sol, pm)
     add_load_setpoint(sol, pm)
     add_shunt_setpoint(sol, pm)
 end

@@ -43,19 +43,19 @@ end
 # overload these to make clear that DC did not model reactive power
 function add_load_setpoint(sol, pm::PMs.GenericPowerModel{T}) where T <: PMs.AbstractDCPForm
     mva_base = pm.data["baseMVA"]
-    PMs.add_setpoint(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
-    PMs.add_setpoint_fixed(sol, pm, "load", "qd")
-    PMs.add_setpoint(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
+    PMs.add_setpoint_fixed!(sol, pm, "load", "qd")
+    PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 function add_shunt_setpoint(sol, pm::PMs.GenericPowerModel{T}) where T <: PMs.AbstractDCPForm
     mva_base = pm.data["baseMVA"]
-    PMs.add_setpoint(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
-    PMs.add_setpoint_fixed(sol, pm, "shunt", "bs")
-    PMs.add_setpoint(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
+    PMs.add_setpoint_fixed!(sol, pm, "shunt", "bs")
+    PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 function add_bus_status_setpoint(sol, pm::PMs.GenericPowerModel{T}) where T <: PMs.AbstractDCPForm
-    PMs.add_setpoint_fixed(sol, pm, "bus", "status")
+    PMs.add_setpoint_fixed!(sol, pm, "bus", "status")
 end
 
