@@ -154,12 +154,14 @@ function run_mld_smpl(pm::_PMs.GenericPowerModel)
     z_demand = _PMs.var(pm, :z_demand)
     z_shunt = _PMs.var(pm, :z_shunt)
 
-    M = maximum([abs(load["pd"]) for (i,load) in _PMs.ref(pm, :load)])
+    load_weight = Dict(i => get(load, "weight", 1.0) for (i,load) in _PMs.ref(pm, :load))
+
+    M = maximum(load_weight[i]*abs(load["pd"]) for (i,load) in _PMs.ref(pm, :load))
     JuMP.@objective(pm.model, Max,
         sum( -10*M*vm_vio[i] for (i, bus) in _PMs.ref(pm, :bus)) +
         sum( -10*M*pg_vio[i] for i in _PMs.ids(pm, :gen) ) +
         sum( M*z_shunt[i] for (i, shunt) in _PMs.ref(pm, :shunt)) +
-        sum( abs(load["pd"])*z_demand[i] for (i, load) in _PMs.ref(pm, :load))
+        sum( load_weight[i]*abs(load["pd"])*z_demand[i] for (i, load) in _PMs.ref(pm, :load))
     )
 
     for i in _PMs.ids(pm, :ref_buses)

@@ -9,6 +9,7 @@ const _LOGGER = Memento.getlogger(PowerModels)
 
 const _PMs = PowerModels
 
+include("core/data.jl")
 include("core/variable.jl")
 include("core/constraint.jl")
 include("core/constraint_template.jl")
