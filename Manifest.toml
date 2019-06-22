@@ -153,9 +153,9 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
 deps = ["InfrastructureModels", "JSON", "JuMP", "LinearAlgebra", "MathOptInterface", "Memento", "SparseArrays"]
-git-tree-sha1 = "0fcfcd19dbad6710d0f18bd4ae49a98a398c7b6c"
+git-tree-sha1 = "7ec523ff2c072f3e38215d145680cd8f94f328f3"
 uuid = "c36e90e8-916a-50a6-bd94-075b64ef4655"
-version = "0.12.0"
+version = "0.12.1"
 
 [[Printf]]
 deps = ["Unicode"]
