@@ -50,6 +50,21 @@
         @test isapprox(bus_status(result, "2"), 0.796675; atol = 1e-2)
         @test isapprox(bus_status(result, "3"), 1.02784e-8; atol = 1e-2)
     end
+    @testset "5-bus pti" begin
+        result = run_mld(case5_pti, ACPPowerModel, ipopt_solver)
+
+        #println(result["objective"])
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 2124.08; atol = 1e0)
+        #println("active power: $(active_power_served(result))")
+        @test isapprox(active_power_served(result), 4.079313388707389; atol = 1e-2)
+        #println([bus["status"] for (i,bus) in result["solution"]["bus"]])
+        @test isapprox(bus_status(result, "1"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "2"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "3"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "4"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "10"), 1.0; atol = 1e-4)
+    end
     @testset "24-bus rts case" begin
         result = run_mld(case24, ACPPowerModel, ipopt_solver)
 

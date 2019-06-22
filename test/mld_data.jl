@@ -100,3 +100,19 @@
     end
 
 end
+
+
+@testset "test adding load weights from pti data" begin
+    data = PowerModels.parse_file("../test/data/case5.raw")
+    for (i,load) in data["load"]
+        @test !haskey(load, "weight")
+    end
+
+    add_load_weights!(data)
+
+    loads = data["load"]
+    @test loads["1"]["weight"] == 100.0
+    @test loads["2"]["weight"] == 10.0
+    @test !haskey(loads["3"], "weight")
+    @test loads["4"]["weight"] == 1.0
+end

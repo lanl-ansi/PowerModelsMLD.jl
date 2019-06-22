@@ -8,7 +8,6 @@ import Memento
 Memento.setlevel!(Memento.getlogger(InfrastructureModels), "error")
 Memento.setlevel!(Memento.getlogger(PowerModels), "error")
 
-import JuMP
 import Cbc
 import Ipopt
 import Juniper
@@ -18,10 +17,10 @@ pms_path = joinpath(dirname(pathof(PowerModels)), "..")
 using Test
 
 # default setup for solvers
-cbc_solver = JuMP.with_optimizer(Cbc.Optimizer, logLevel=0)
-ipopt_solver = JuMP.with_optimizer(Ipopt.Optimizer, tol=1e-6, print_level=0)
-juniper_solver = JuMP.with_optimizer(Juniper.Optimizer, nl_solver=JuMP.with_optimizer(Ipopt.Optimizer, tol=1e-4, print_level=0), mip_solver=cbc_solver, log_levels=[])
-scs_solver = JuMP.with_optimizer(SCS.Optimizer, max_iters=1000000, acceleration_lookback=1, alpha=1.9, verbose=0)
+cbc_solver = with_optimizer(Cbc.Optimizer, logLevel=0)
+ipopt_solver = with_optimizer(Ipopt.Optimizer, tol=1e-6, print_level=0)
+juniper_solver = with_optimizer(Juniper.Optimizer, nl_solver=with_optimizer(Ipopt.Optimizer, tol=1e-4, print_level=0), mip_solver=cbc_solver, log_levels=[])
+scs_solver = with_optimizer(SCS.Optimizer, max_iters=1000000, acceleration_lookback=1, alpha=1.9, verbose=0)
 
 # parse test cases
 case3_mld = PowerModels.parse_file("../test/data/case3_mld.m")
@@ -29,6 +28,7 @@ case3_mld_s = PowerModels.parse_file("../test/data/case3_mld_s.m")
 case3_mld_uc = PowerModels.parse_file("../test/data/case3_mld_uc.m")
 case3_mld_lc = PowerModels.parse_file("../test/data/case3_mld_lc.m")
 case5_mld_ft = PowerModels.parse_file("../test/data/case5_mld_ft.m")
+case5_pti = PowerModels.parse_file("../test/data/case5.raw")
 case24 = PowerModels.parse_file("$(pms_path)/test/data/matpower/case24.m")
 
 # testing threshold parameters
