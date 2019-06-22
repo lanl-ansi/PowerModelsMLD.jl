@@ -37,6 +37,34 @@
         @test isapprox(bus_status(result, "2"), 0.0; atol = 1e-4)
         @test isapprox(bus_status(result, "3"), 0.0; atol = 1e-4)
     end
+    @testset "5-bus weights case" begin
+        data = PowerModels.parse_file("../test/data/case5.raw")
+        add_load_weights!(data)
+
+        result = PowerModelsMLD.run_ac_mld_uc(data, ipopt_solver)
+
+        #println(result["objective"])
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 310.635; atol = 1e-2)
+        #println("active power: $(active_power_served(result))")
+        @test isapprox(active_power_served(result), 4.063481; atol = 1e-3)
+        #@test all_gens_on(result)
+        #println([bus["status"] for (i,bus) in result["solution"]["bus"]])
+        @test isapprox(bus_status(result, "1"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "2"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "3"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "4"), 1.0; atol = 1e-4)
+        @test isapprox(bus_status(result, "10"), 0.0; atol = 1e-4)
+
+        loads = result["solution"]["load"]
+
+        # load 1 is high priorty, load 2 is medium priorty
+        @test loads["1"]["status"] >= loads["2"]["status"]
+
+        # load 2 is medium priorty, loads 3/4 are low priorty
+        @test loads["2"]["status"] >= loads["3"]["status"]
+        @test loads["2"]["status"] >= loads["4"]["status"]
+    end
     @testset "24-bus rts case" begin
         result = PowerModelsMLD.run_ac_mld_uc(case24, ipopt_solver)
 

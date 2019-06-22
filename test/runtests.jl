@@ -28,6 +28,7 @@ case3_mld_s = PowerModels.parse_file("../test/data/case3_mld_s.m")
 case3_mld_uc = PowerModels.parse_file("../test/data/case3_mld_uc.m")
 case3_mld_lc = PowerModels.parse_file("../test/data/case3_mld_lc.m")
 case5_mld_ft = PowerModels.parse_file("../test/data/case5_mld_ft.m")
+case5_pti = PowerModels.parse_file("../test/data/case5.raw")
 case24 = PowerModels.parse_file("$(pms_path)/test/data/matpower/case24.m")
 
 # testing threshold parameters
