@@ -204,3 +204,65 @@ function solution_mld_smpl(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     add_setpoint_load!(sol, pm)
     add_setpoint_shunt!(sol, pm)
 end
+
+
+
+# Maximum loadability with generator and bus participation relaxed
+function run_mld_strg(file, model_constructor, solver; kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, post_mld_strg; solution_builder = solution_mld, kwargs...)
+end
+
+function post_mld_strg(pm::_PMs.GenericPowerModel)
+    variable_bus_voltage_indicator(pm, relax=true)
+    variable_bus_voltage_on_off(pm)
+
+    _PMs.variable_generation_indicator(pm, relax=true)
+    _PMs.variable_generation_on_off(pm)
+
+    variable_storage_indicator(pm, relax = true)
+    variable_storage_on_off(pm)
+
+    _PMs.variable_branch_flow(pm)
+    _PMs.variable_dcline_flow(pm)
+
+    variable_demand_factor(pm)
+    variable_shunt_factor(pm)
+
+
+    objective_max_loadability_strg(pm)
+
+
+    for i in _PMs.ids(pm, :ref_buses)
+        _PMs.constraint_theta_ref(pm, i)
+    end
+    constraint_bus_voltage_on_off(pm)
+
+    for i in _PMs.ids(pm, :gen)
+        _PMs.constraint_generation_on_off(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :bus)
+        constraint_power_balance_shunt_storage_shed(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :storage)
+        _PMs.constraint_storage_state(pm, i)
+        _PMs.constraint_storage_complementarity(pm, i)
+        _PMs.constraint_storage_loss(pm, i)
+        _PMs.constraint_storage_thermal_limit(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :branch)
+        _PMs.constraint_ohms_yt_from(pm, i)
+        _PMs.constraint_ohms_yt_to(pm, i)
+
+        _PMs.constraint_voltage_angle_difference(pm, i)
+
+        _PMs.constraint_thermal_limit_from(pm, i)
+        _PMs.constraint_thermal_limit_to(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :dcline)
+        _PMs.constraint_dcline(pm, i)
+    end
+end
