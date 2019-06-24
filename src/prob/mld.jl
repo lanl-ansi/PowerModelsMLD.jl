@@ -266,3 +266,12 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
         _PMs.constraint_dcline(pm, i)
     end
 end
+
+function solution_mld_storage(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
+    _PMs.add_setpoint_bus_voltage!(sol, pm)
+    _PMs.add_setpoint_generator_power!(sol, pm)
+    _PMs.add_setpoint_storage_power!(sol, pm)
+    _PMs.add_setpoint_branch_flow!(sol, pm)
+    add_setpoint_load!(sol, pm)
+    add_setpoint_shunt!(sol, pm)
+end
