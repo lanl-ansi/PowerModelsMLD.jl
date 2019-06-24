@@ -219,6 +219,7 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
     _PMs.variable_generation_indicator(pm, relax=true)
     _PMs.variable_generation_on_off(pm)
 
+    _PMs.variable_storage(pm)
     variable_storage_indicator(pm, relax = true)
     variable_storage_on_off(pm)
 

@@ -51,6 +51,28 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel{T}) where T <: _PM
     )
 end
 
+# can we just add storage to the regular max_loadability objective? #
+function objective_max_loadability_strg(pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+    nws = _PMs.nw_ids(pm)
+
+    @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
+
+    z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
+    z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
+    z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
+    z_storage = Dict(n => _PMs.var(pm, n, :z_storage) for n in nws)
+
+    M = Dict(n => 10*maximum([abs(load["pd"]) for (i,load) in _PMs.ref(pm, n, :load)]) for n in nws)
+
+    return JuMP.@objective(pm.model, Max,
+        sum(
+            sum(M[n]*z_gen[n][i] for (i,gen) in _PMs.ref(pm, n, :gen)) +
+            sum(M[n]*z_storage[n][i] for (i,storage) in _PMs.ref(pm, n, :storage)) +
+            sum(M[n]*z_shunt[n][i] for (i,shunt) in _PMs.ref(pm, n, :shunt)) +
+            sum(abs(load["pd"])*z_demand[n][i] for (i,load) in _PMs.ref(pm, n, :load))
+        for n in nws)
+    )
+end
 
 
 ### These are needed to overload the default behavior for reactive power ###

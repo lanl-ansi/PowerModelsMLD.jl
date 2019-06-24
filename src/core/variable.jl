@@ -82,16 +82,16 @@ function variable_active_storage_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.c
         [i in _PMs.ids(pm, nw, :gen)], base_name="$(nw)_$(cnd)_ps",
         lower_bound = min(0, _PMs.ref(pm, nw, :gen, i, "pmin", cnd)),
         upper_bound = max(0, _PMs.ref(pm, nw, :gen, i, "pmax", cnd)),
-        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "pg_start", cnd)
+        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :gen, i), "ps_start", cnd)
     )
 end
 
 function variable_reactive_storage_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
-    _PMs.var(pm, nw, cnd)[:qg_start] = JuMP.@variable(pm.model,
+    _PMs.var(pm, nw, cnd)[:qs] = JuMP.@variable(pm.model,
         [i in _PMs.ids(pm, nw, :storage)], base_name="$(nw)_$(cnd)_qs",
         lower_bound = min(0, _PMs.ref(pm, nw, :storage, i, "qmin", cnd)),
         upper_bound = max(0, _PMs.ref(pm, nw, :storage, i, "qmax", cnd)),
-        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :storage, i), "qg_start", cnd)
+        start = _PMs.comp_start_value(_PMs.ref(pm, nw, :storage, i), "qs_start", cnd)
     )
 end
 
