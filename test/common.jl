@@ -4,6 +4,10 @@ function gen_status(result, gen_id)
     return result["solution"]["gen"][gen_id]["gen_status"]
 end
 
+function storage_status(result, storage_id)
+    return result["solution"]["storage"][storage_id]["status"]
+end
+
 function bus_status(result, bus_id)
     return result["solution"]["bus"][bus_id]["status"]
 end

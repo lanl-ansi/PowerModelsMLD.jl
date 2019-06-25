@@ -129,6 +129,10 @@ function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, conductorless=true, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
 end
 
+function add_setpoint_storage_status!(sol, pm::_PMs.GenericPowerModel)
+    _PMs.add_setpoint!(sol, pm, "storage", "status", :z_storage, status_name="status", conductorless=true, default_value = (item) -> item["status"]*1.0)
+end
+
 
 # Maximum loadability with generator participation fixed
 function run_mld_smpl(file, model_constructor, solver; kwargs...)
@@ -209,7 +213,7 @@ end
 
 # Maximum loadability with generator and bus participation relaxed
 function run_mld_strg(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, post_mld_strg; solution_builder = solution_mld, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, post_mld_strg; solution_builder = solution_mld_storage, kwargs...)
 end
 
 function post_mld_strg(pm::_PMs.GenericPowerModel)
@@ -268,11 +272,76 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
     end
 end
 
+# Maximum loadability with generator and bus participation relaxed
+function run_mld_strg_uc(file, model_constructor, solver; kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, post_mld_strg_uc; solution_builder = solution_mld_storage, kwargs...)
+end
+
+function post_mld_strg_uc(pm::_PMs.GenericPowerModel)
+    variable_bus_voltage_indicator(pm, relax=true)
+    variable_bus_voltage_on_off(pm)
+
+    _PMs.variable_generation_indicator(pm)
+    _PMs.variable_generation_on_off(pm)
+
+    _PMs.variable_storage(pm)
+    variable_storage_indicator(pm)
+    variable_storage_on_off(pm)
+
+    _PMs.variable_branch_flow(pm)
+    _PMs.variable_dcline_flow(pm)
+
+    variable_demand_factor(pm)
+    variable_shunt_factor(pm)
+
+
+    objective_max_loadability_strg(pm)
+
+
+    for i in _PMs.ids(pm, :ref_buses)
+        _PMs.constraint_theta_ref(pm, i)
+    end
+    constraint_bus_voltage_on_off(pm)
+
+    for i in _PMs.ids(pm, :gen)
+        _PMs.constraint_generation_on_off(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :bus)
+        constraint_power_balance_shunt_storage_shed(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :storage)
+        _PMs.constraint_storage_state(pm, i)
+        _PMs.constraint_storage_complementarity(pm, i)
+        _PMs.constraint_storage_loss(pm, i)
+        _PMs.constraint_storage_thermal_limit(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :branch)
+        _PMs.constraint_ohms_yt_from(pm, i)
+        _PMs.constraint_ohms_yt_to(pm, i)
+
+        _PMs.constraint_voltage_angle_difference(pm, i)
+
+        _PMs.constraint_thermal_limit_from(pm, i)
+        _PMs.constraint_thermal_limit_to(pm, i)
+    end
+
+    for i in _PMs.ids(pm, :dcline)
+        _PMs.constraint_dcline(pm, i)
+    end
+end
+
 function solution_mld_storage(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     _PMs.add_setpoint_bus_voltage!(sol, pm)
     _PMs.add_setpoint_generator_power!(sol, pm)
-    _PMs.add_setpoint_storage_power!(sol, pm)
     _PMs.add_setpoint_branch_flow!(sol, pm)
+    _PMs.add_setpoint_generator_status!(sol, pm)
+    println("adding storage setpoints")
+    _PMs.add_setpoint_storage!(sol, pm)
+    add_setpoint_bus_status!(sol, pm)
+    add_setpoint_storage_status!(sol, pm)
     add_setpoint_load!(sol, pm)
     add_setpoint_shunt!(sol, pm)
 end
