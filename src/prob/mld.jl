@@ -211,7 +211,7 @@ end
 
 
 
-# Maximum loadability with generator and bus participation relaxed
+# Maximum loadability with storage, generator and bus participation relaxed
 function run_mld_strg(file, model_constructor, solver; kwargs...)
     return _PMs.run_model(file, model_constructor, solver, post_mld_strg; solution_builder = solution_mld_storage, kwargs...)
 end
@@ -272,7 +272,7 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
     end
 end
 
-# Maximum loadability with generator and bus participation relaxed
+# Maximum loadability with storage and generator participated fixed,  and bus participation relaxed
 function run_mld_strg_uc(file, model_constructor, solver; kwargs...)
     return _PMs.run_model(file, model_constructor, solver, post_mld_strg_uc; solution_builder = solution_mld_storage, kwargs...)
 end
