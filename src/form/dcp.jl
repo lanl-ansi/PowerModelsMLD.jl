@@ -29,13 +29,17 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel{T}) where T <: _PM
     z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
 
-    M = Dict(n => 10*maximum([abs(load["pd"]) for (i,load) in _PMs.ref(pm, n, :load)]) for n in nws)
+    load_weight = Dict(n =>
+        Dict(i => get(load, "weight", 1.0) for (i,load) in _PMs.ref(pm, n, :load)) 
+    for n in nws)
+
+    M = Dict(n => 10*maximum([load_weight[n][i]*abs(load["pd"]) for (i,load) in _PMs.ref(pm, n, :load)]) for n in nws)
 
     return JuMP.@objective(pm.model, Max,
         sum(
             sum(M[n]*z_gen[n][i] for (i,gen) in _PMs.ref(pm, n, :gen)) +
             sum(M[n]*z_shunt[n][i] for (i,shunt) in _PMs.ref(pm, n, :shunt)) +
-            sum(abs(load["pd"])*z_demand[n][i] for (i,load) in _PMs.ref(pm, n, :load))
+            sum(load_weight[n][i]*abs(load["pd"])*z_demand[n][i] for (i,load) in _PMs.ref(pm, n, :load))
         for n in nws)
     )
 end
