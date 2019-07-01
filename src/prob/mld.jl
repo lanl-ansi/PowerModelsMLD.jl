@@ -108,6 +108,7 @@ function solution_mld(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     _PMs.add_setpoint_generator_power!(sol, pm)
     _PMs.add_setpoint_branch_flow!(sol, pm)
     _PMs.add_setpoint_generator_status!(sol, pm)
+    add_setpoint_branch_status!(sol,pm)
     add_setpoint_bus_status!(sol, pm)
     add_setpoint_load!(sol, pm)
     add_setpoint_shunt!(sol, pm)
@@ -132,6 +133,10 @@ end
 function add_setpoint_storage_status!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "storage", "status", :z_storage, status_name="status", conductorless=true, default_value = (item) -> item["status"]*1.0)
 end
+
+function add_setpoint_branch_status!(sol, pm::_PMs.GenericPowerModel)
+    _PMs.add_setpoint!(sol, pm, "branch", "br_status", :z_branch; default_value = (item) -> item["br_status"]*1.0)
+  end
 
 
 # Maximum loadability with generator participation fixed
@@ -340,6 +345,7 @@ function solution_mld_storage(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     _PMs.add_setpoint_generator_status!(sol, pm)
     println("adding storage setpoints")
     _PMs.add_setpoint_storage!(sol, pm)
+    add_setpoint_branch_status!(sol,pm)
     add_setpoint_bus_status!(sol, pm)
     add_setpoint_storage_status!(sol, pm)
     add_setpoint_load!(sol, pm)
