@@ -1,5 +1,5 @@
 % used in tests of,
-% - storage modeling
+% - systems with only storage for generation
 
 function mpc = case5
 mpc.version = '2';
