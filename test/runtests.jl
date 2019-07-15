@@ -30,7 +30,7 @@ case3_mld_lc = PowerModels.parse_file("../test/data/case3_mld_lc.m")
 case5_mld_ft = PowerModels.parse_file("../test/data/case5_mld_ft.m")
 case5_mld_strg = PowerModels.parse_file("../test/data/case5_mld_strg.m")
 case5_mld_strg_uc = PowerModels.parse_file("../test/data/case5_mld_strg_uc.m")
-case5_mld_strg_only = PowerModels.parse_file("../test/data/case5_mld_strg_only.m")
+case5_mld_strgonly = PowerModels.parse_file("../test/data/case5_mld_strgonly.m")
 case5_pti = PowerModels.parse_file("../test/data/case5.raw")
 case24 = PowerModels.parse_file("$(pms_path)/test/data/matpower/case24.m")
 

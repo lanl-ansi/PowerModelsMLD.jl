@@ -30,7 +30,7 @@
         @test all_voltages_on(result)
     end
     @testset "5-bus strg only case uc" begin
-        result = run_mld_strg_uc(case5_mld_strg_only, ACPPowerModel, juniper_solver)
+        result = run_mld_strg_uc(case5_mld_strgonly, ACPPowerModel, juniper_solver)
 
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
@@ -79,7 +79,7 @@ end
         @test all_voltages_on(result)
     end
     @testset "5-bus strg only case uc" begin
-        result = run_mld_strg_uc(case5_mld_strg_only, DCPPowerModel, juniper_solver)
+        result = run_mld_strg_uc(case5_mld_strgonly, DCPPowerModel, juniper_solver)
 
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
