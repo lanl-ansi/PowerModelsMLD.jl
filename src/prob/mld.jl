@@ -129,11 +129,6 @@ function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "bus", "status", :z_voltage, status_name="bus_type", inactive_status_value = 4, conductorless=true, default_value = (item) -> if item["bus_type"] == 4 0.0 else 1.0 end)
 end
 
-function add_setpoint_storage_status!(sol, pm::_PMs.GenericPowerModel)
-    _PMs.add_setpoint!(sol, pm, "storage", "status", :z_storage, status_name="status", conductorless=true, default_value = (item) -> item["status"]*1.0)
-end
-
-
 # Maximum loadability with generator participation fixed
 function run_mld_smpl(file, model_constructor, solver; kwargs...)
     return _PMs.run_model(file, model_constructor, solver, run_mld_smpl; solution_builder = solution_mld_smpl, kwargs...)
@@ -224,8 +219,8 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
     _PMs.variable_generation_on_off(pm)
 
     _PMs.variable_storage(pm)
-    variable_storage_indicator(pm, relax = true)
-    variable_storage_on_off(pm)
+    _PMs.variable_storage_indicator(pm, relax = true)
+    _PMs.variable_storage_mi_on_off(pm)
 
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
@@ -252,7 +247,8 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
 
     for i in _PMs.ids(pm, :storage)
         _PMs.constraint_storage_state(pm, i)
-        _PMs.constraint_storage_complementarity(pm, i)
+        _PMs.constraint_storage_complementarity_mi(pm, i)
+        _PMs.constraint_storage_on_off(pm,i)
         _PMs.constraint_storage_loss(pm, i)
         _PMs.constraint_storage_thermal_limit(pm, i)
     end
@@ -285,8 +281,8 @@ function post_mld_strg_uc(pm::_PMs.GenericPowerModel)
     _PMs.variable_generation_on_off(pm)
 
     _PMs.variable_storage(pm)
-    variable_storage_indicator(pm)
-    variable_storage_on_off(pm)
+    _PMs.variable_storage_indicator(pm)
+    _PMs.variable_storage_mi_on_off(pm)
 
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
@@ -313,9 +309,10 @@ function post_mld_strg_uc(pm::_PMs.GenericPowerModel)
 
     for i in _PMs.ids(pm, :storage)
         _PMs.constraint_storage_state(pm, i)
-        _PMs.constraint_storage_complementarity(pm, i)
+        _PMs.constraint_storage_complementarity_mi(pm, i)
         _PMs.constraint_storage_loss(pm, i)
         _PMs.constraint_storage_thermal_limit(pm, i)
+        _PMs.constraint_storage_on_off(pm,i)
     end
 
     for i in _PMs.ids(pm, :branch)
@@ -338,10 +335,9 @@ function solution_mld_storage(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
     _PMs.add_setpoint_generator_power!(sol, pm)
     _PMs.add_setpoint_branch_flow!(sol, pm)
     _PMs.add_setpoint_generator_status!(sol, pm)
-    println("adding storage setpoints")
     _PMs.add_setpoint_storage!(sol, pm)
+    _PMs.add_setpoint_storage_status!(sol, pm)
     add_setpoint_bus_status!(sol, pm)
-    add_setpoint_storage_status!(sol, pm)
     add_setpoint_load!(sol, pm)
     add_setpoint_shunt!(sol, pm)
 end

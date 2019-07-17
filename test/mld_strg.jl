@@ -6,9 +6,9 @@
 
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
-        @test isapprox(result["objective"], 2286.541959570648; atol = 1e-2)
+        @test isapprox(result["objective"], 2287.079339; atol = 1e-2)
         #println("active power: $(active_power_served(result))")
-        @test isapprox(active_power_served(result), 6.542045207786627; atol = 1e-1)
+        @test isapprox(active_power_served(result), 7.07979; atol = 1e-1)
         @test all_gens_on(result)
         @test all_voltages_on(result)
     end
@@ -17,9 +17,9 @@
 
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
-        @test isapprox(result["objective"], 2247.51532146452; atol = 1e-2)
+        @test isapprox(result["objective"], 2248.0537; atol = 1e-2)
         #println("active power: $(active_power_served(result))")
-        @test isapprox(active_power_served(result), 7.515735740137701; atol = 1e-1)
+        @test isapprox(active_power_served(result), 8.054129; atol = 1e-1)
         @test isapprox(gen_status(result, "1"), 1.000000; atol = 1e-6)
         @test isapprox(gen_status(result, "2"), 1.000000; atol = 1e-6)
         @test isapprox(gen_status(result, "3"), 1.000000; atol = 1e-6)
@@ -55,9 +55,9 @@ end
 
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
-        @test isapprox(result["objective"], 286.39983018501727; atol = 1e-2)
+        @test isapprox(result["objective"], 286.89977; atol = 1e-2)
         #println("active power: $(active_power_served(result))")
-        @test isapprox(active_power_served(result), 6.3998903579828195; atol = 1e-1)
+        @test isapprox(active_power_served(result), 6.89983; atol = 1e-1)
         @test all_gens_on(result)
         @test all_voltages_on(result)
     end
