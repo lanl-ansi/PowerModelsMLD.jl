@@ -115,9 +115,7 @@ function solution_mld(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
 end
 
 function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel)
-    println("begin load setpoints")
-    @show _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
-    println("Loads added")
+    _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
     _PMs.add_setpoint!(sol, pm, "load", "qd", :z_demand; scale = (x,item,i) -> x*item["qd"][i])
     _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand, conductorless=true; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
