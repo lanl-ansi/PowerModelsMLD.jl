@@ -1,5 +1,5 @@
 
-@testset "test ac ml uc huristic" begin
+@testset "test ac ml uc heuristic" begin
     @testset "3-bus case" begin
         result = PowerModelsMLD.run_ac_mld_uc(case3_mld, ipopt_solver)
 
