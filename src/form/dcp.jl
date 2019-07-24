@@ -89,14 +89,14 @@ function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.
     mva_base = pm.data["baseMVA"]
     _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "load", "qd")
-    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand, conductorless=true; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
     mva_base = pm.data["baseMVA"]
     _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "shunt", "bs")
-    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt, conductorless=true; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 #=
