@@ -1,6 +1,8 @@
 % used in tests of,
-% - Unit Commitment 
+% - Unit comiitment and discrete shunt/storage variables
 % 	- generator Pmin values large enough to force unit commitment
+%	- unit commitment gens cannot power all loads, must pick discrete storage
+%	- added shunt that cannot be powered and a shunt that is possible to power
 
 function mpc = case5
 mpc.version = '2';
@@ -10,8 +12,8 @@ mpc.baseMVA = 100.0;
 %	bus_i	type	Pd	Qd	Gs	Bs	area	Vm	Va	baseKV	zone	Vmax	Vmin
 mpc.bus = [
 	1	 2	 0.0	 0.0	 0.0	 0.0	 1	 1.00000	 2.80377	 230.0	 1	 1.10000	 0.90000;
-	2	 1	 300.0	 98.61	 0.0	 0.0	 1	 1.08407	 -0.73465	 230.0	 1	 1.10000	 0.90000;
-	3	 2	 300.0	 98.61	 0.0	 0.0	 1	 1.00000	 -0.55972	 230.0	 1	 1.10000	 0.90000;
+	2	 1	 300.0	 98.61	 100.0	 -3000.0	 1	 1.08407	 -0.73465	 230.0	 1	 1.10000	 0.90000;
+	3	 2	 300.0	 98.61	 1.0	 -10.0	 1	 1.00000	 -0.55972	 230.0	 1	 1.10000	 0.90000;
 	4	 3	 400.0	 131.47	 0.0	 0.0	 1	 1.00000	 0.00000	 230.0	 1	 1.10000	 0.90000;
 	5	 2	 0.0	 0.0	 0.0	 0.0	 1	 1.00000	 3.59033	 230.0	 1	 1.10000	 0.90000;
 ];

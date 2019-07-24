@@ -1,21 +1,5 @@
 
-
 # # same as AbstractWRForm
-# function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: _PMs.AbstractWRForms
-#     _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
-#         [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt",
-#         lower_bound = 0,
-#         upper_bound = 1,
-#         start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "z_shunt_start", cnd, 1.0)
-#     )
-#     _PMs.var(pm, nw, cnd)[:wz_shunt] = JuMP.@variable(pm.model,
-#         [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_wz_shunt",
-#         lower_bound = 0,
-#         upper_bound = _PMs.ref(pm, nw, :bus)[_PMs.ref(pm, nw, :shunt, i)["shunt_bus"]]["vmax"]^2,
-#         start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
-#     )
-# end
-
 ""
 function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false) where T <: _PMs.AbstractWRForms
     if relax == true
@@ -39,7 +23,8 @@ function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cn
         )
         _PMs.var(pm, nw, cnd)[:wz_shunt] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_wz_shunt",
-            binary = true,
+            lower_bound = 0,
+            upper_bound = _PMs.ref(pm, nw, :bus)[_PMs.ref(pm, nw, :shunt, i)["shunt_bus"]]["vmax"]^2,
             start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "wz_shunt_start", cnd, 1.001)
         )
     end
