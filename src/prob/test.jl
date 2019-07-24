@@ -13,8 +13,8 @@ function _post_mld_discrete_load(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm, relax=false)
-    variable_shunt_factor(pm, relax=false)
+    variable_demand_factor(pm)
+    variable_shunt_factor(pm)
 
 
     objective_max_loadability(pm)

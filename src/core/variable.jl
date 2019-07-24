@@ -1,5 +1,5 @@
 ""
-function variable_demand_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = true)
+function variable_demand_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
         _PMs.var(pm, nw, cnd)[:z_demand] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_$(cnd)_z_demand", 
@@ -18,7 +18,7 @@ end
 
 
 ""
-function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = true)
+function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
         _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt", 

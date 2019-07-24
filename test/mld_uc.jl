@@ -264,7 +264,7 @@ end
 =#
 
 @testset "discrete load and shunt variables" begin
-    @testset "3-bus uc case" begin
+    @testset "5-bus discrete case" begin
         result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_s, DCPPowerModel, cbc_solver)
 
         #println(result["objective"])
@@ -281,4 +281,38 @@ end
         @test isapprox(shunt_status(result, "1"), 0.00000; atol = 1e-6)
         @test isapprox(shunt_status(result, "2"), 1.00000; atol = 1e-6)
     end
+    @testset "5-bus discrete case" begin
+        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_s, ACPPowerModel, juniper_solver)
+
+        #println(result["objective"])
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 2205.9996; atol = 1e-2)
+        #println("active power: $(active_power_served(result))")
+        @test isapprox(active_power_served(result), 6.0; atol = 1e-1)
+        @test isapprox(gen_status(result, "5"), 0.000000; atol = 1e-6)
+        @test isapprox(gen_status(result, "2"), 1.000000; atol = 1e-6)
+        @test isapprox(load_status(result, "1"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "1"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "2"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "3"), 0.00000; atol = 1e-6)
+        @test isapprox(shunt_status(result, "1"), 0.00000; atol = 1e-6)
+        @test isapprox(shunt_status(result, "2"), 1.00000; atol = 1e-6)
+    end
+    @testset "5-bus discrete case" begin
+        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_s, SOCWRPowerModel, juniper_solver)
+
+        #println(result["objective"])
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 2205.99966; atol = 1e-2)
+        #println("active power: $(active_power_served(result))")
+        @test isapprox(active_power_served(result), 6.0; atol = 1e-1)
+        @test isapprox(gen_status(result, "5"), 0.000000; atol = 1e-6)
+        @test isapprox(gen_status(result, "2"), 1.000000; atol = 1e-6)
+        @test isapprox(load_status(result, "1"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "1"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "2"), 1.00000; atol = 1e-6)
+        @test isapprox(load_status(result, "3"), 0.00000; atol = 1e-6)
+        @test isapprox(shunt_status(result, "1"), 0.00000; atol = 1e-6)
+        @test isapprox(shunt_status(result, "2"), 1.00000; atol = 1e-6)
+    end 
 end
