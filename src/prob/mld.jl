@@ -117,13 +117,13 @@ end
 function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
     _PMs.add_setpoint!(sol, pm, "load", "qd", :z_demand; scale = (x,item,i) -> x*item["qd"][i])
-    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> item["status"]*1.0)
+    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel)
     _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
     _PMs.add_setpoint!(sol, pm, "shunt", "bs", :z_shunt; scale = (x,item,i) -> x*item["bs"][i])
-    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> item["status"]*1.0)
+    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)

@@ -17,7 +17,7 @@
 # end
 
 ""
-function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false) where T <: _PMs.AbstractWRForms
+function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false) where T <: _PMs.AbstractWRForms
     if relax == true
         _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt", 
