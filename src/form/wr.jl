@@ -16,7 +16,7 @@ function variable_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw::
         start = _PMs.comp_start_value(_PMs.ref(pm, nw, :buspairs, bp), "wr_start", cnd, 1.0)
     )
     _PMs.var(pm, nw, cnd)[:wi] = JuMP.@variable(pm.model,
-        wi[bp in _PMs.ids(pm, nw, :buspairs)], base_name="$(nw)_$(cnd)_wi",
+        [bp in _PMs.ids(pm, nw, :buspairs)], base_name="$(nw)_$(cnd)_wi",
         lower_bound = min(0,wi_min[bp]),
         upper_bound = max(0,wi_max[bp]),
         start = _PMs.comp_start_value(_PMs.ref(pm, nw, :buspairs, bp), "wi_start", cnd)
