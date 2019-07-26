@@ -13,8 +13,8 @@ function post_mld(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm)
-    variable_shunt_factor(pm)
+    variable_demand_factor(pm, relax=true)
+    variable_shunt_factor(pm, relax=true)
 
 
     objective_max_loadability(pm)
@@ -66,8 +66,8 @@ function post_mld_uc(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm)
-    variable_shunt_factor(pm)
+    variable_demand_factor(pm, relax=true)
+    variable_shunt_factor(pm, relax=true)
 
 
     objective_max_loadability(pm)
@@ -143,8 +143,8 @@ function run_mld_smpl(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm)
-    variable_shunt_factor(pm)
+    variable_demand_factor(pm, relax=true)
+    variable_shunt_factor(pm, relax=true)
 
     _PMs.var(pm)[:vm_vio] = JuMP.@variable(pm.model, vm_vio[i in _PMs.ids(pm, :bus)] >= 0)
     _PMs.var(pm)[:pg_vio] = JuMP.@variable(pm.model, pg_vio[i in _PMs.ids(pm, :gen)] >= 0)
@@ -227,8 +227,8 @@ function post_mld_strg(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm)
-    variable_shunt_factor(pm)
+    variable_demand_factor(pm, relax=true)
+    variable_shunt_factor(pm, relax=true)
 
 
     objective_max_loadability_strg(pm)
@@ -289,8 +289,8 @@ function post_mld_strg_uc(pm::_PMs.GenericPowerModel)
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
-    variable_demand_factor(pm)
-    variable_shunt_factor(pm)
+    variable_demand_factor(pm, relax=true)
+    variable_shunt_factor(pm, relax=true)
 
 
     objective_max_loadability_strg(pm)

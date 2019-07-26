@@ -22,6 +22,7 @@ include("form/wrm.jl")
 include("form/shared.jl")
 
 include("prob/mld.jl")
+include("prob/test.jl")
 
 include("util/ac-mld-uc.jl")
 

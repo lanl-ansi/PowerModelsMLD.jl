@@ -12,6 +12,14 @@ function bus_status(result, bus_id)
     return result["solution"]["bus"][bus_id]["status"]
 end
 
+function load_status(result, load_id)
+    return result["solution"]["load"][load_id]["status"]
+end
+
+function shunt_status(result, shunt_id)
+    return result["solution"]["shunt"][shunt_id]["status"]
+end
+
 function all_gens_on(result)
     #println([gen["gen_status"] for (i,gen) in result["solution"]["gen"]])
     #println(minimum([gen["gen_status"] for (i,gen) in result["solution"]["gen"]]))
