@@ -4,8 +4,8 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
 
-    z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
-    z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
+    z_demand = Dict(n => _PMs.var(pm, n, :z_demand) for n in nws)
+    z_shunt = Dict(n => _PMs.var(pm, n, :z_shunt) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
     z_voltage = Dict(n => _PMs.var(pm, n, :z_voltage) for n in nws)
 
@@ -41,8 +41,8 @@ function objective_max_loadability_strg(pm::_PMs.GenericPowerModel)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
 
-    z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
-    z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
+    z_demand = Dict(n => _PMs.var(pm, n, :z_demand) for n in nws)
+    z_shunt = Dict(n => _PMs.var(pm, n, :z_shunt) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
     z_storage = Dict(n => _PMs.var(pm, n, :z_storage) for n in nws)
     z_voltage = Dict(n => _PMs.var(pm, n, :z_voltage) for n in nws)

@@ -12,8 +12,8 @@ function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::I
     p = _PMs.var(pm, n, c, :p)
     pg = _PMs.var(pm, n, c, :pg)
     p_dc = _PMs.var(pm, n, c, :p_dc)
-    z_demand = _PMs.var(pm, n, c, :z_demand)
-    z_shunt = _PMs.var(pm, n, c, :z_shunt)
+    z_demand = _PMs.var(pm, n, :z_demand)
+    z_shunt = _PMs.var(pm, n, :z_shunt)
 
     JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs))
 end
@@ -23,8 +23,8 @@ function constraint_power_balance_shunt_storage_shed(pm::_PMs.GenericPowerModel{
     pg = _PMs.var(pm, n, c, :pg)
     ps = _PMs.var(pm, n, c, :ps)
     p_dc = _PMs.var(pm, n, c, :p_dc)
-    z_demand = _PMs.var(pm, n, c, :z_demand)
-    z_shunt = _PMs.var(pm, n, c, :z_shunt)
+    z_demand = _PMs.var(pm, n, :z_demand)
+    z_shunt = _PMs.var(pm, n, :z_shunt)
 
     JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) + sum(ps[s] for s in bus_storage) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs))
 end
@@ -36,8 +36,8 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel{T}) where T <: _PM
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
 
-    z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
-    z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
+    z_demand = Dict(n => _PMs.var(pm, n, :z_demand) for n in nws)
+    z_shunt = Dict(n => _PMs.var(pm, n, :z_shunt) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
 
     load_weight = Dict(n =>
@@ -61,8 +61,8 @@ function objective_max_loadability_strg(pm::_PMs.GenericPowerModel{T}) where T <
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
 
-    z_demand = Dict(n => _PMs.var(pm, :z_demand, nw=n) for n in nws)
-    z_shunt = Dict(n => _PMs.var(pm, :z_shunt, nw=n) for n in nws)
+    z_demand = Dict(n => _PMs.var(pm, n, :z_demand) for n in nws)
+    z_shunt = Dict(n => _PMs.var(pm, n, :z_shunt) for n in nws)
     z_gen = Dict(n => _PMs.var(pm, n, :z_gen) for n in nws)
     z_storage = Dict(n => _PMs.var(pm, n, :z_storage) for n in nws)
 
@@ -87,16 +87,16 @@ end
 
 function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
     mva_base = pm.data["baseMVA"]
-    _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
+    _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; conductorless=true, scale = (x,item,i) -> x*item["pd"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "load", "qd")
-    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; conductorless=true, default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
     mva_base = pm.data["baseMVA"]
-    _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
+    _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; conductorless=true, scale = (x,item,i) -> x*item["gs"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "shunt", "bs")
-    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
+    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; conductorless=true, default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
 #=

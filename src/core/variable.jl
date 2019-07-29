@@ -1,15 +1,15 @@
 ""
 function variable_demand_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
-        _PMs.var(pm, nw, cnd)[:z_demand] = JuMP.@variable(pm.model,
-            [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_$(cnd)_z_demand", 
+        _PMs.var(pm, nw)[:z_demand] = JuMP.@variable(pm.model,
+            [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_z_demand", 
             upper_bound = 1, 
             lower_bound = 0,
             start = _PMs.comp_start_value(_PMs.ref(pm, nw, :load, i), "z_demand_on_start", cnd, 1.0)
         )
     else
-        _PMs.var(pm, nw, cnd)[:z_demand] = JuMP.@variable(pm.model,
-        [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_$(cnd)_z_demand", 
+        _PMs.var(pm, nw)[:z_demand] = JuMP.@variable(pm.model,
+        [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_z_demand", 
         binary = true,
         start = _PMs.comp_start_value(_PMs.ref(pm, nw, :load, i), "z_demand_on_start", cnd, 1.0)
     )
@@ -20,15 +20,15 @@ end
 ""
 function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
-        _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
-            [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt", 
+        _PMs.var(pm, nw)[:z_shunt] = JuMP.@variable(pm.model,
+            [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_z_shunt", 
             upper_bound = 1, 
             lower_bound = 0,
             start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "z_shunt_on_start", cnd, 1.0)
         )
     else
-        _PMs.var(pm, nw, cnd)[:z_shunt] = JuMP.@variable(pm.model,
-            [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_$(cnd)_z_shunt", 
+        _PMs.var(pm, nw)[:z_shunt] = JuMP.@variable(pm.model,
+            [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_z_shunt", 
             binary = true,
             start = _PMs.comp_start_value(_PMs.ref(pm, nw, :shunt, i), "z_shunt_on_start", cnd, 1.0)
         )

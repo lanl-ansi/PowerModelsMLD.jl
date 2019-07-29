@@ -115,15 +115,15 @@ function solution_mld(pm::_PMs.GenericPowerModel, sol::Dict{String,Any})
 end
 
 function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel)
-    _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; scale = (x,item,i) -> x*item["pd"][i])
-    _PMs.add_setpoint!(sol, pm, "load", "qd", :z_demand; scale = (x,item,i) -> x*item["qd"][i])
-    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
+    _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; conductorless=true, scale = (x,item,i) -> x*item["pd"][i])
+    _PMs.add_setpoint!(sol, pm, "load", "qd", :z_demand; conductorless=true, scale = (x,item,i) -> x*item["qd"][i])
+    _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; conductorless=true, default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel)
-    _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; scale = (x,item,i) -> x*item["gs"][i])
-    _PMs.add_setpoint!(sol, pm, "shunt", "bs", :z_shunt; scale = (x,item,i) -> x*item["bs"][i])
-    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
+    _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; conductorless=true, scale = (x,item,i) -> x*item["gs"][i])
+    _PMs.add_setpoint!(sol, pm, "shunt", "bs", :z_shunt; conductorless=true, scale = (x,item,i) -> x*item["bs"][i])
+    _PMs.add_setpoint!(sol, pm, "shunt", "status", :z_shunt; conductorless=true, default_value = (item) -> if (item["status"] == 0) 0.0 else 1.0 end)
 end
 
 function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel)
@@ -152,8 +152,8 @@ function run_mld_smpl(pm::_PMs.GenericPowerModel)
     pg = _PMs.var(pm, :pg)
     qg = _PMs.var(pm, :qg)
 
-    z_demand = _PMs.var(pm, :z_demand)
-    z_shunt = _PMs.var(pm, :z_shunt)
+    z_demand = _PMs.var(pm, pm.cnw, :z_demand)
+    z_shunt = _PMs.var(pm, pm.cnw, :z_shunt)
 
     load_weight = Dict(i => get(load, "weight", 1.0) for (i,load) in _PMs.ref(pm, :load))
 
