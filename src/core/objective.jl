@@ -1,5 +1,5 @@
 
-function objective_max_loadability(pm::_PMs.GenericPowerModel)
+function objective_max_loadability(pm::_PMs.AbstractPowerModel)
     nws = _PMs.nw_ids(pm)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
@@ -36,7 +36,7 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel)
 end
 
 # can we just add storage to the regular max_loadability objective? #
-function objective_max_loadability_strg(pm::_PMs.GenericPowerModel)
+function objective_max_loadability_strg(pm::_PMs.AbstractPowerModel)
     nws = _PMs.nw_ids(pm)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)

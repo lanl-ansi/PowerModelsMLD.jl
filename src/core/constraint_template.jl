@@ -1,6 +1,6 @@
 
 ""
-function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function constraint_power_balance_shunt_shed(pm::_PMs.AbstractPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     bus = _PMs.ref(pm, nw, :bus, i)
     bus_arcs = _PMs.ref(pm, nw, :bus_arcs, i)
     bus_arcs_dc = _PMs.ref(pm, nw, :bus_arcs_dc, i)
@@ -17,7 +17,7 @@ function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel, i::Int;
     constraint_power_balance_shunt_shed(pm, nw, cnd, i, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs)
 end
 
-function constraint_power_balance_shunt_storage_shed(pm::_PMs.GenericPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function constraint_power_balance_shunt_storage_shed(pm::_PMs.AbstractPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     bus = _PMs.ref(pm, nw, :bus, i)
     bus_arcs = _PMs.ref(pm, nw, :bus_arcs, i)
     bus_arcs_dc = _PMs.ref(pm, nw, :bus_arcs_dc, i)
@@ -36,17 +36,17 @@ function constraint_power_balance_shunt_storage_shed(pm::_PMs.GenericPowerModel,
 end
 
 
-constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...) = constraint_bus_voltage_on_off(pm, nw, cnd; kwargs...)
+constraint_bus_voltage_on_off(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...) = constraint_bus_voltage_on_off(pm, nw, cnd; kwargs...)
 
 
-function constraint_voltage_magnitude_on_off(pm::_PMs.GenericPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function constraint_voltage_magnitude_on_off(pm::_PMs.AbstractPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     bus = _PMs.ref(pm, nw, :bus, i)
 
     constraint_voltage_magnitude_on_off(pm, nw, cnd, i, bus["vmin"][cnd], bus["vmax"][cnd])
 end
 
 
-function constraint_voltage_magnitude_sqr_on_off(pm::_PMs.GenericPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function constraint_voltage_magnitude_sqr_on_off(pm::_PMs.AbstractPowerModel, i::Int; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     bus = _PMs.ref(pm, nw, :bus, i)
 
     constraint_voltage_magnitude_sqr_on_off(pm, nw, cnd, i, bus["vmin"][cnd], bus["vmax"][cnd])

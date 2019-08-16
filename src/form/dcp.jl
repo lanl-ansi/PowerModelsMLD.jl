@@ -1,14 +1,14 @@
 
 
-function variable_bus_voltage_indicator(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...) where T <: _PMs.AbstractDCPForm
+function variable_bus_voltage_indicator(pm::_PMs.AbstractDCPModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...)
 end
 
-variable_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}; kwargs...) where T <: _PMs.AbstractDCPForm = _PMs.variable_voltage_angle(pm; kwargs...)
+variable_bus_voltage_on_off(pm::_PMs.AbstractDCPModel; kwargs...) = _PMs.variable_voltage_angle(pm; kwargs...)
 
-function constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...) where T <: _PMs.AbstractDCPForm
+function constraint_bus_voltage_on_off(pm::_PMs.AbstractDCPModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...)
 end
 
-function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs) where T <: _PMs.AbstractDCPForm
+function constraint_power_balance_shunt_shed(pm::_PMs.AbstractDCPModel, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs)
     p = _PMs.var(pm, n, c, :p)
     pg = _PMs.var(pm, n, c, :pg)
     p_dc = _PMs.var(pm, n, c, :p_dc)
@@ -18,7 +18,7 @@ function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::I
     JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs))
 end
 
-function constraint_power_balance_shunt_storage_shed(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs) where T <: _PMs.AbstractDCPForm
+function constraint_power_balance_shunt_storage_shed(pm::_PMs.AbstractDCPModel, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs)
     p = _PMs.var(pm, n, c, :p)
     pg = _PMs.var(pm, n, c, :pg)
     ps = _PMs.var(pm, n, c, :ps)
@@ -31,7 +31,7 @@ end
 
 
 # Needed becouse DC models do not have the z_voltage variable
-function objective_max_loadability(pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+function objective_max_loadability(pm::_PMs.AbstractDCPModel)
     nws = _PMs.nw_ids(pm)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
@@ -56,7 +56,7 @@ function objective_max_loadability(pm::_PMs.GenericPowerModel{T}) where T <: _PM
 end
 
 # can we just add storage to the regular max_loadability objective? #
-function objective_max_loadability_strg(pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+function objective_max_loadability_strg(pm::_PMs.AbstractDCPModel)
     nws = _PMs.nw_ids(pm)
 
     @assert all(!_PMs.ismulticonductor(pm, n) for n in nws)
@@ -85,14 +85,14 @@ end
 
 ### These are needed to overload the default behavior for reactive power ###
 
-function add_setpoint_load!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+function add_setpoint_load!(sol, pm::_PMs.AbstractDCPModel)
     mva_base = pm.data["baseMVA"]
     _PMs.add_setpoint!(sol, pm, "load", "pd", :z_demand; conductorless=true, scale = (x,item,i) -> x*item["pd"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "load", "qd")
     _PMs.add_setpoint!(sol, pm, "load", "status", :z_demand; conductorless=true, default_value = (item) -> if (item["status"] == 0) 0 else 1 end)
 end
 
-function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+function add_setpoint_shunt!(sol, pm::_PMs.AbstractDCPModel)
     mva_base = pm.data["baseMVA"]
     _PMs.add_setpoint!(sol, pm, "shunt", "gs", :z_shunt; conductorless=true, scale = (x,item,i) -> x*item["gs"][i])
     _PMs.add_setpoint_fixed!(sol, pm, "shunt", "bs")
@@ -100,7 +100,7 @@ function add_setpoint_shunt!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs
 end
 
 #=
-function add_setpoint_bus_status!(sol, pm::_PMs.GenericPowerModel{T}) where T <: _PMs.AbstractDCPForm
+function add_setpoint_bus_status!(sol, pm::_PMs.AbstractDCPModel)
     _PMs.add_setpoint_fixed!(sol, pm, "bus", "status")
 end
 =#

@@ -1,5 +1,5 @@
 ""
-function variable_demand_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
+function variable_demand_factor(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
         _PMs.var(pm, nw)[:z_demand] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :load)], base_name="$(nw)_z_demand", 
@@ -18,7 +18,7 @@ end
 
 
 ""
-function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
+function variable_shunt_factor(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
         _PMs.var(pm, nw)[:z_shunt] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_z_shunt", 
@@ -35,7 +35,7 @@ function variable_shunt_factor(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::
     end
 end
 
-function variable_bus_voltage_indicator(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, relax = false)
+function variable_bus_voltage_indicator(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, relax = false)
     if !relax
         _PMs.var(pm, nw)[:z_voltage] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :bus)], base_name="$(nw)_z_voltage",
@@ -53,7 +53,7 @@ function variable_bus_voltage_indicator(pm::_PMs.GenericPowerModel; nw::Int=pm.c
 end
 
 
-function variable_voltage_magnitude_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function variable_voltage_magnitude_on_off(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     _PMs.var(pm, nw, cnd)[:vm] = JuMP.@variable(pm.model,
         [i in _PMs.ids(pm, nw, :bus)], base_name="$(nw)_$(cnd)_vm",
         lower_bound = 0,
@@ -63,7 +63,7 @@ function variable_voltage_magnitude_on_off(pm::_PMs.GenericPowerModel; nw::Int=p
 end
 
 
-function variable_voltage_magnitude_sqr_on_off(pm::_PMs.GenericPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+function variable_voltage_magnitude_sqr_on_off(pm::_PMs.AbstractPowerModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     _PMs.var(pm, nw, cnd)[:w] = JuMP.@variable(pm.model,
         [i in _PMs.ids(pm, nw, :bus)], base_name="$(nw)_$(cnd)_w",
         lower_bound = 0,

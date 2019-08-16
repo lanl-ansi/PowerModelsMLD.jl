@@ -1,7 +1,7 @@
 
 # # same as AbstractWRForm
 ""
-function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false) where T <: _PMs.AbstractWRForms
+function variable_shunt_factor(pm::_PMs.AbstractWModels; nw::Int=pm.cnw, cnd::Int=pm.ccnd, relax = false)
     if relax == true
         _PMs.var(pm, nw)[:z_shunt] = JuMP.@variable(pm.model,
             [i in _PMs.ids(pm, nw, :shunt)], base_name="$(nw)_z_shunt", 
@@ -24,32 +24,7 @@ function variable_shunt_factor(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cn
         )
 end
 
-function constraint_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: _PMs.AbstractWRForms
-    wr_min, wr_max, wi_min, wi_max = _PMs.ref_calc_voltage_product_bounds(_PMs.ref(pm, nw, :buspairs))
-
-    wr = _PMs.var(pm, nw, cnd, :wr)
-    wi = _PMs.var(pm, nw, cnd, :wi)
-    z_voltage = _PMs.var(pm, nw, :z_voltage)
-
-    for bp in _PMs.ids(pm, nw, :buspairs)
-        (i,j) = bp
-        z_fr = z_voltage[i]
-        z_to = z_voltage[j]
-
-        JuMP.@constraint(pm.model, wr[bp] <= z_fr*wr_max[bp])
-        JuMP.@constraint(pm.model, wr[bp] >= z_fr*wr_min[bp])
-        JuMP.@constraint(pm.model, wi[bp] <= z_fr*wi_max[bp])
-        JuMP.@constraint(pm.model, wi[bp] >= z_fr*wi_min[bp])
-
-        JuMP.@constraint(pm.model, wr[bp] <= z_to*wr_max[bp])
-        JuMP.@constraint(pm.model, wr[bp] >= z_to*wr_min[bp])
-        JuMP.@constraint(pm.model, wi[bp] <= z_to*wi_max[bp])
-        JuMP.@constraint(pm.model, wi[bp] >= z_to*wi_min[bp])
-    end
-end
-
-
-function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs) where T <: _PMs.AbstractWRForms
+function constraint_power_balance_shunt_shed(pm::_PMs.AbstractWModels, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs)
     w = _PMs.var(pm, n, c, :w, i)
     p = _PMs.var(pm, n, c, :p)
     q = _PMs.var(pm, n, c, :q)
@@ -70,7 +45,7 @@ function constraint_power_balance_shunt_shed(pm::_PMs.GenericPowerModel{T}, n::I
     end
 end
 
-function constraint_power_balance_shunt_storage_shed(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs) where T <: _PMs.AbstractWRForms
+function constraint_power_balance_shunt_storage_shed(pm::_PMs.AbstractWModels, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs)
     w = _PMs.var(pm, n, c, :w, i)
     p = _PMs.var(pm, n, c, :p)
     q = _PMs.var(pm, n, c, :q)

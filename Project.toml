@@ -12,7 +12,7 @@ PowerModels = "c36e90e8-916a-50a6-bd94-075b64ef4655"
 InfrastructureModels = "~0.2"
 JuMP = "~0.19"
 Juniper = ">= 0.4"
-PowerModels = "~0.12.2"
+PowerModels = "~0.13"
 julia = "^1"
 
 [extras]
