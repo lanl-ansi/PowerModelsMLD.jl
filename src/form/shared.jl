@@ -60,8 +60,8 @@ function constraint_power_balance_shunt_storage_shed(pm::_PMs.AbstractWModels, n
     wz_shunt = _PMs.var(pm, n, :wz_shunt)
 
     
-    JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) + sum(ps[s] for s in bus_storage) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*wz_shunt[i] for (i,gs) in bus_gs))
-    JuMP.@constraint(pm.model, sum(q[a] for a in bus_arcs) + sum(q_dc[a_dc] for a_dc in bus_arcs_dc) == sum(qg[g] for g in bus_gens) + sum(qs[s] for s in bus_storage) - sum(qd*z_demand[i] for (i,qd) in bus_qd) + sum(bs*wz_shunt[i] for (i,bs) in bus_bs))
+    JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(ps[s] for s in bus_storage) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*wz_shunt[i] for (i,gs) in bus_gs))
+    JuMP.@constraint(pm.model, sum(q[a] for a in bus_arcs) + sum(q_dc[a_dc] for a_dc in bus_arcs_dc) == sum(qg[g] for g in bus_gens) - sum(qs[s] for s in bus_storage) - sum(qd*z_demand[i] for (i,qd) in bus_qd) + sum(bs*wz_shunt[i] for (i,bs) in bus_bs))
 
     for s in keys(bus_gs)
         InfrastructureModels.relaxation_product(pm.model, w, z_shunt[s], wz_shunt[s])
