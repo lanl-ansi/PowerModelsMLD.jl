@@ -10,6 +10,8 @@ function _post_mld_discrete_load(pm::_PMs.AbstractPowerModel)
     _PMs.variable_generation_indicator(pm)
     _PMs.variable_generation_on_off(pm)
 
+    _PMs.variable_storage(pm)
+
     _PMs.variable_branch_flow(pm)
     _PMs.variable_dcline_flow(pm)
 
@@ -25,13 +27,12 @@ function _post_mld_discrete_load(pm::_PMs.AbstractPowerModel)
     end
     constraint_bus_voltage_on_off(pm)
 
-
     for i in _PMs.ids(pm, :gen)
         _PMs.constraint_generation_on_off(pm, i)
     end
 
     for i in _PMs.ids(pm, :bus)
-        constraint_power_balance_shunt_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
     end
 
     for i in _PMs.ids(pm, :branch)

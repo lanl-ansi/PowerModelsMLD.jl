@@ -8,25 +8,27 @@ variable_bus_voltage_on_off(pm::_PMs.AbstractDCPModel; kwargs...) = _PMs.variabl
 function constraint_bus_voltage_on_off(pm::_PMs.AbstractDCPModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd, kwargs...)
 end
 
-function constraint_power_balance_shunt_shed(pm::_PMs.AbstractDCPModel, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs)
-    p = _PMs.var(pm, n, c, :p)
-    pg = _PMs.var(pm, n, c, :pg)
-    p_dc = _PMs.var(pm, n, c, :p_dc)
-    z_demand = _PMs.var(pm, n, :z_demand)
-    z_shunt = _PMs.var(pm, n, :z_shunt)
+""
+function constraint_power_balance_shed(pm::_PMs.AbstractDCPModel, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs)
+    p    = get(_PMs.var(pm, n, c),    :p, Dict()); _PMs._check_var_keys(p, bus_arcs, "active power", "branch")
+    pg   = get(_PMs.var(pm, n, c),   :pg, Dict()); _PMs._check_var_keys(pg, bus_gens, "active power", "generator")
+    ps   = get(_PMs.var(pm, n, c),   :ps, Dict()); _PMs._check_var_keys(ps, bus_storage, "active power", "storage")
+    psw  = get(_PMs.var(pm, n, c),  :psw, Dict()); _PMs._check_var_keys(psw, bus_arcs_sw, "active power", "switch")
+    p_dc = get(_PMs.var(pm, n, c), :p_dc, Dict()); _PMs._check_var_keys(p_dc, bus_arcs_dc, "active power", "dcline")
+    z_demand = get(_PMs.var(pm, n), :z_demand, Dict()); _PMs._check_var_keys(z_demand, keys(bus_pd), "power factor scale", "load")
+    z_shunt = get(_PMs.var(pm, n), :z_shunt, Dict()); _PMs._check_var_keys(z_shunt, keys(bus_gs), "power factor scale", "shunt")
 
-    JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs))
-end
 
-function constraint_power_balance_shunt_storage_shed(pm::_PMs.AbstractDCPModel, n::Int, c::Int, i::Int, bus_arcs, bus_arcs_dc, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs)
-    p = _PMs.var(pm, n, c, :p)
-    pg = _PMs.var(pm, n, c, :pg)
-    ps = _PMs.var(pm, n, c, :ps)
-    p_dc = _PMs.var(pm, n, c, :p_dc)
-    z_demand = _PMs.var(pm, n, :z_demand)
-    z_shunt = _PMs.var(pm, n, :z_shunt)
-
-    JuMP.@constraint(pm.model, sum(p[a] for a in bus_arcs) + sum(p_dc[a_dc] for a_dc in bus_arcs_dc) == sum(pg[g] for g in bus_gens) - sum(ps[s] for s in bus_storage) - sum(pd*z_demand[i] for (i,pd) in bus_pd) - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs))
+    _PMs.con(pm, n, c, :kcl_p)[i] = JuMP.@constraint(pm.model,
+        sum(p[a] for a in bus_arcs)
+        + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
+        + sum(psw[a_sw] for a_sw in bus_arcs_sw)
+        ==
+        sum(pg[g] for g in bus_gens)
+        - sum(ps[s] for s in bus_storage)
+        - sum(pd*z_demand[i] for (i,pd) in bus_pd)
+        - sum(gs*1.0^2*z_shunt[i] for (i,gs) in bus_gs)
+    )
 end
 
 

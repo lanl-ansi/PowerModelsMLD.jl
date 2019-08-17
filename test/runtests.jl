@@ -34,6 +34,9 @@ case5_mld_strg_only = PowerModels.parse_file("../test/data/case5_mld_strg_only.m
 case5_pti = PowerModels.parse_file("../test/data/case5.raw")
 case24 = PowerModels.parse_file("$(pms_path)/test/data/matpower/case24.m")
 
+case5_mld_uc = PowerModels.parse_file("../test/data/case5_mld_strg_uc.m")
+case5_mld_uc["storage"] = Dict{String,Any}()
+
 # testing threshold parameters
 opt_gap_tol = 1e-3 # in the case of max, throw error if ub/lb < 1 - opt_gap_tol (note, non-SCS solvers are more accurate)
 

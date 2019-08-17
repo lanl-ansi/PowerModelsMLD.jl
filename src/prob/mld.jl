@@ -30,7 +30,7 @@ function post_mld(pm::_PMs.AbstractPowerModel)
     end
 
     for i in _PMs.ids(pm, :bus)
-        constraint_power_balance_shunt_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
     end
 
     for i in _PMs.ids(pm, :branch)
@@ -84,7 +84,7 @@ function post_mld_uc(pm::_PMs.AbstractPowerModel)
     end
 
     for i in _PMs.ids(pm, :bus)
-        constraint_power_balance_shunt_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
     end
 
     for i in _PMs.ids(pm, :branch)
@@ -172,7 +172,7 @@ function run_mld_smpl(pm::_PMs.AbstractPowerModel)
     _PMs.constraint_model_voltage(pm)
 
     for (i, bus) in _PMs.ref(pm, :bus)
-        constraint_power_balance_shunt_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
 
         JuMP.@constraint(pm.model, vm[i] <= bus["vmax"] + vm_vio[i])
         JuMP.@constraint(pm.model, vm[i] >= bus["vmin"] - vm_vio[i])
@@ -244,7 +244,7 @@ function post_mld_strg(pm::_PMs.AbstractPowerModel)
     end
 
     for i in _PMs.ids(pm, :bus)
-        constraint_power_balance_shunt_storage_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
     end
 
     for i in _PMs.ids(pm, :storage)
@@ -306,7 +306,7 @@ function post_mld_strg_uc(pm::_PMs.AbstractPowerModel)
     end
 
     for i in _PMs.ids(pm, :bus)
-        constraint_power_balance_shunt_storage_shed(pm, i)
+        constraint_power_balance_shed(pm, i)
     end
 
     for i in _PMs.ids(pm, :storage)
