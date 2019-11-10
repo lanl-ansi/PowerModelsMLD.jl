@@ -265,7 +265,7 @@ end
 
 @testset "discrete load and shunt variables" begin
     @testset "5-bus discrete case" begin
-        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_uc, DCPPowerModel, cbc_solver)   
+        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_uc, DCPPowerModel, cbc_solver)   
         #println(result["objective"])
         @test result["termination_status"] == OPTIMAL
         @test isapprox(result["objective"], 206.0; atol = 1e-2)
@@ -281,7 +281,7 @@ end
         @test isapprox(shunt_status(result, "2"), 1.00000; atol = 1e-6)
     end
     @testset "5-bus discrete case" begin
-        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_uc, ACPPowerModel, juniper_solver)
+        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_uc, ACPPowerModel, juniper_solver)
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
         @test isapprox(result["objective"], 2205.9996; atol = 1e-2)
@@ -297,7 +297,7 @@ end
         @test isapprox(shunt_status(result, "2"), 1.00000; atol = 1e-6)
     end
     @testset "5-bus discrete case" begin
-        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_strg_uc, SOCWRPowerModel, juniper_solver)
+        result = PowerModelsMLD._run_mld_discrete_load(case5_mld_uc, SOCWRPowerModel, juniper_solver)
         #println(result["objective"])
         @test result["termination_status"] == LOCALLY_SOLVED
         @test isapprox(result["objective"], 2205.99966; atol = 1e-2)

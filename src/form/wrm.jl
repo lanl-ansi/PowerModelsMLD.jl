@@ -1,6 +1,6 @@
 
 
-function variable_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}, nw::Int=pm.cnw, cnd::Int=pm.ccnd; bounded = true, kwargs...) where T <: _PMs.AbstractWRMForm
+function variable_bus_voltage_on_off(pm::_PMs.AbstractWRMModel, nw::Int=pm.cnw, cnd::Int=pm.ccnd; bounded = true, kwargs...)
     wr_min, wr_max, wi_min, wi_max = _PMs.ref_calc_voltage_product_bounds(_PMs.ref(pm, nw, :buspairs))
 
     bus_count = length(_PMs.ref(pm, nw, :bus))
@@ -60,7 +60,7 @@ function variable_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}, nw::Int=pm.c
 end
 
 
-function constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int) where T <: _PMs.AbstractWRMForm
+function constraint_bus_voltage_on_off(pm::_PMs.AbstractWRMModel, n::Int, c::Int)
     WR = _PMs.var(pm, n, c, :WR)
     WI = _PMs.var(pm, n, c, :WI)
     z_voltage = _PMs.var(pm, n, :z_voltage)

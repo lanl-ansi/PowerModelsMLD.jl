@@ -1,12 +1,12 @@
 
 
-function variable_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}; kwargs...) where T <: _PMs.AbstractWRForm
+function variable_bus_voltage_on_off(pm::_PMs.AbstractWRModel; kwargs...)
     variable_voltage_magnitude_sqr_on_off(pm; kwargs...)
     variable_bus_voltage_product_on_off(pm; kwargs...)
 end
 
 
-function variable_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw::Int=pm.cnw, cnd::Int=pm.ccnd) where T <: _PMs.AbstractWRForm
+function variable_bus_voltage_product_on_off(pm::_PMs.AbstractWRModel; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
     wr_min, wr_max, wi_min, wi_max = _PMs.ref_calc_voltage_product_bounds(_PMs.ref(pm, nw, :buspairs))
 
     _PMs.var(pm, nw, cnd)[:wr] = JuMP.@variable(pm.model,
@@ -25,7 +25,32 @@ function variable_bus_voltage_product_on_off(pm::_PMs.GenericPowerModel{T}; nw::
 end
 
 
-function constraint_bus_voltage_on_off(pm::_PMs.GenericPowerModel{T}, n::Int, c::Int; kwargs...) where T <: _PMs.AbstractWRForm
+function constraint_bus_voltage_product_on_off(pm::_PMs.AbstractWRModels; nw::Int=pm.cnw, cnd::Int=pm.ccnd)
+    wr_min, wr_max, wi_min, wi_max = _PMs.ref_calc_voltage_product_bounds(_PMs.ref(pm, nw, :buspairs))
+
+    wr = _PMs.var(pm, nw, cnd, :wr)
+    wi = _PMs.var(pm, nw, cnd, :wi)
+    z_voltage = _PMs.var(pm, nw, :z_voltage)
+
+    for bp in _PMs.ids(pm, nw, :buspairs)
+        (i,j) = bp
+        z_fr = z_voltage[i]
+        z_to = z_voltage[j]
+
+        JuMP.@constraint(pm.model, wr[bp] <= z_fr*wr_max[bp])
+        JuMP.@constraint(pm.model, wr[bp] >= z_fr*wr_min[bp])
+        JuMP.@constraint(pm.model, wi[bp] <= z_fr*wi_max[bp])
+        JuMP.@constraint(pm.model, wi[bp] >= z_fr*wi_min[bp])
+
+        JuMP.@constraint(pm.model, wr[bp] <= z_to*wr_max[bp])
+        JuMP.@constraint(pm.model, wr[bp] >= z_to*wr_min[bp])
+        JuMP.@constraint(pm.model, wi[bp] <= z_to*wi_max[bp])
+        JuMP.@constraint(pm.model, wi[bp] >= z_to*wi_min[bp])
+    end
+end
+
+
+function constraint_bus_voltage_on_off(pm::_PMs.AbstractWRModels, n::Int, c::Int; kwargs...)
     for (i,bus) in _PMs.ref(pm, n, :bus)
         constraint_voltage_magnitude_sqr_on_off(pm, i; nw=n, cnd=c)
     end
