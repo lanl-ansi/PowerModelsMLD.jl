@@ -20,7 +20,7 @@ using Test
 cbc_solver = with_optimizer(Cbc.Optimizer, logLevel=0)
 ipopt_solver = with_optimizer(Ipopt.Optimizer, tol=1e-6, print_level=0)
 juniper_solver = with_optimizer(Juniper.Optimizer, nl_solver=with_optimizer(Ipopt.Optimizer, tol=1e-4, print_level=0), mip_solver=cbc_solver, log_levels=[])
-scs_solver = with_optimizer(SCS.Optimizer, max_iters=1000000, acceleration_lookback=1, alpha=1.9, verbose=0)
+scs_solver = with_optimizer(SCS.Optimizer, max_iters=100000, eps=1e-5, verbose=0)
 
 # parse test cases
 case3_mld = PowerModels.parse_file("../test/data/case3_mld.m")
