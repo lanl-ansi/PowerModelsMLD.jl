@@ -1,9 +1,9 @@
 # Maximum loadability with generator and bus participation relaxed
 function run_mld(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, post_mld; solution_builder = solution_mld, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, build_mld; solution_builder = solution_mld, kwargs...)
 end
 
-function post_mld(pm::_PMs.AbstractPowerModel)
+function build_mld(pm::_PMs.AbstractPowerModel)
     variable_bus_voltage_indicator(pm, relax=true)
     variable_bus_voltage_on_off(pm)
 
@@ -53,10 +53,10 @@ end
 
 # Maximum loadability with flexible generator participation fixed
 function run_mld_uc(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, post_mld_uc; solution_builder = solution_mld, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, build_mld_uc; solution_builder = solution_mld, kwargs...)
 end
 
-function post_mld_uc(pm::_PMs.AbstractPowerModel)
+function build_mld_uc(pm::_PMs.AbstractPowerModel)
     variable_bus_voltage_indicator(pm)
     variable_bus_voltage_on_off(pm)
 
@@ -210,10 +210,10 @@ end
 
 # Maximum loadability with storage, generator and bus participation relaxed
 function run_mld_strg(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, post_mld_strg; solution_builder = solution_mld_storage, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, build_mld_strg; solution_builder = solution_mld_storage, kwargs...)
 end
 
-function post_mld_strg(pm::_PMs.AbstractPowerModel)
+function build_mld_strg(pm::_PMs.AbstractPowerModel)
     variable_bus_voltage_indicator(pm, relax=true)
     variable_bus_voltage_on_off(pm)
 
@@ -272,10 +272,10 @@ end
 
 # Maximum loadability with storage and generator participated fixed,  and bus participation relaxed
 function run_mld_strg_uc(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, post_mld_strg_uc; solution_builder = solution_mld_storage, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, build_mld_strg_uc; solution_builder = solution_mld_storage, kwargs...)
 end
 
-function post_mld_strg_uc(pm::_PMs.AbstractPowerModel)
+function build_mld_strg_uc(pm::_PMs.AbstractPowerModel)
     variable_bus_voltage_indicator(pm, relax=true)
     variable_bus_voltage_on_off(pm)
 
