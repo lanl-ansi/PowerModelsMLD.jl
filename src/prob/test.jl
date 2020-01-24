@@ -1,9 +1,9 @@
 # Maximum loadability with flexible generator participation fixed
 function _run_mld_discrete_load(file, model_constructor, solver; kwargs...)
-    return _PMs.run_model(file, model_constructor, solver, _post_mld_discrete_load; solution_builder = solution_mld, kwargs...)
+    return _PMs.run_model(file, model_constructor, solver, _build_mld_discrete_load; solution_builder = solution_mld, kwargs...)
 end
 
-function _post_mld_discrete_load(pm::_PMs.AbstractPowerModel)
+function _build_mld_discrete_load(pm::_PMs.AbstractPowerModel)
     variable_bus_voltage_indicator(pm)
     variable_bus_voltage_on_off(pm)
 
