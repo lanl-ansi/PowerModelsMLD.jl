@@ -1,3 +1,8 @@
+# Package Deprecation
+
+As of February 2020, the PowerModelsMLD package has been deprecated and is not longer be maintained.  Its functionality has been moved to the more general [PowerModelsRestoration](https://github.com/lanl-ansi/PowerModelsRestoration.jl) package.  At the time of migration (i.e. PowerModels v0.14 and PowerModelsRestoration v0.1) migrating from PowerModelsMLD to PowerModelsRestoration simply requires updating the name of the package.
+
+
 # PowerModelsMLD.jl
 
 Dev:
